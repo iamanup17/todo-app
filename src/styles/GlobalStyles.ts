@@ -10,6 +10,5 @@ export const GlobalStyles = createGlobalStyle`
     body{
         font-family:${()=>Theme.font.primary};
         font-weight : ${()=>Theme.font.regular};
-        background: #000;
     }
 `

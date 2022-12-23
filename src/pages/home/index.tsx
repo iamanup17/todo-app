@@ -9,9 +9,11 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { Collapse } from "antd";
-import Header from "./Header";
-import Navbar from "./Navbar";
-import Todos from "./Todos";
+import Todos from "../../components/Todos";
+import { StyledContainer } from "../../styles/Styles";
+import Header from "../../components/Header";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export interface IData {
   title: string;
@@ -19,77 +21,16 @@ export interface IData {
   url: string;
 }
 
-const { Panel } = Collapse;
-
-const Container = styled.div`
-  width: 98vw;
-  height: 100%;
-  /* margin: 10px auto; */
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  background: #13151f;
-  color: #efefef;
-
-  .row-wrapper {
-    color: #656565;
-  }
-  .row-wrapper-Header {
-    /* margin: 12px; */
-    /* background:wheat; */
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid gray;
-    padding-bottom: 10px;
-
-    /* border-bottom:1px solid gray */
-    /* background:orange */
-  }
-  .content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 10px;
-    border-radius: 8px;
-    color: #747474;
-
-    span {
-      color: #cfcfcf;
-    }
-    small {
-      color: #acacac;
-    }
-  }
-
-  .row-wrapper-nav {
-    border-bottom: 1px solid gray;
-    padding-bottom: 10px;
-    .content {
-      justify-content: center;
-      align-items: center;
-      color: white;
-      /* border:none; */
-    }
-  }
-
-  .row-wrapper-collapse {
-    padding-bottom: 10px;
-    border-bottom: 1px solid gray;
-    .row-wrapper .content {
-      flex-direction: row;
-      align-items: center;
-      border: 1px solid gray;
-      color: white;
-    }
-  }
-`;
-
 const Home: FC = () => {
+  const initial = {
+    title: "Default",
+    description: "Default",
+    url: "Default",
+  };
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState<IData[]>([]);
+  const [data, setData] = useState<IData[]>([initial]);
 
   const handleOk = () => {
     alert("OK clicked");
@@ -107,11 +48,24 @@ const Home: FC = () => {
   const showModal = () => {
     setOpen(true);
   };
+  const notifySuccess = (x: string) =>
+    toast.success(x, {
+      position: "top-center",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
 
   const onFinish = (values: any) => {
     console.log("Success:", values);
     setData([...data, values]);
     form.resetFields();
+    notifySuccess("Task Added SuccessFully");
+
     setTimeout(() => {
       handleCancel();
     }, 500);
@@ -121,6 +75,23 @@ const Home: FC = () => {
     console.log("Failed:", errorInfo);
   };
 
+  const handleDelete = (taskName: string) => {
+    setData(
+      data.filter((task) => {
+        return task.title !== taskName;
+      })
+    );
+    notifySuccess("Task Deleted SuccessFully");
+  };
+
+  const  handleEdit = (taskName: string) => {
+    showModal()
+    console.log(form.getFieldValue)
+    // notifySuccess("Task Deleted SuccessFully");
+  };
+
+ 
+
   const Head = (
     <span style={{ color: "white" }}>
       {" "}
@@ -129,9 +100,9 @@ const Home: FC = () => {
   );
 
   return (
-    <Container className="">
+    <StyledContainer className="">
       <Header />
-
+      <ToastContainer />
       <Row gutter={[3, 12]} className="row-wrapper-nav">
         <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
           <div className="content">DRAG & DROP </div>
@@ -150,7 +121,7 @@ const Home: FC = () => {
         </Col>
         <Col className="gutter-row" offset={4} lg={5} md={3} sm={2} xs={2}>
           <div className="content">
-            <Button type="primary" onClick={showModal} icon={<PlusOutlined />}>
+            <Button onClick={showModal} icon={<PlusOutlined />}>
               {" "}
               ADD COLLECTION
             </Button>
@@ -227,55 +198,19 @@ const Home: FC = () => {
       {/* <Navbar/> */}
 
       {/* CATEGORIES */}
-      <Todos data={data} category="General" defaultKey={true} />
-      <Todos data={data} category="Technology" defaultKey={false} />
-    </Container>
+      <Todos
+        data={data}
+        category="General"
+        defaultKey={true}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
+      {/* <Todos data={data} category="Technology" defaultKey={false} /> */}
+      {/* <Todos data={data} category="Technology" defaultKey={false} /> */}
+      {/* <Todos data={data} category="Technology" defaultKey={false} /> */}
+      {/* <Todos data={data} category="Technology" defaultKey={false} /> */}
+    </StyledContainer>
   );
 };
 
 export default Home;
-
-
-  /* <Row gutter={[3, 12]} className="row-wrapper row-wrapper-collapse">
-<Col className="gutter-row" lg={24} md={3} sm={2} xs={2}>
-  <div className="content">
-    <Collapse accordion bordered={false}>
-      <Panel header="General" key="1">
-        <Row gutter={[12, 12]} className="row-wrapper">
-          <Col className="gutter-row" lg={6} md={3} sm={2} xs={2}>
-            <div className="content">
-              {" "}
-              <GlobalOutlined /> DRAG & DROP{" "}
-            </div>
-          </Col>
-          <Col className="gutter-row" lg={6} md={3} sm={2} xs={2}>
-            <div className="content">
-              {" "}
-              <GlobalOutlined /> DRAG & DROP{" "}
-            </div>
-          </Col>
-          <Col className="gutter-row" lg={6} md={3} sm={2} xs={2}>
-            <div className="content">
-              {" "}
-              <GlobalOutlined /> DRAG & DROP{" "}
-            </div>
-          </Col>
-          <Col className="gutter-row" lg={6} md={3} sm={2} xs={2}>
-            <div className="content">
-              {" "}
-              <GlobalOutlined /> DRAG & DROP{" "}
-            </div>
-          </Col>
-          <Col className="gutter-row" lg={6} md={3} sm={2} xs={2}>
-            <div className="content">
-              {" "}
-              <GlobalOutlined /> DRAG & DROP{" "}
-            </div>
-          </Col>
-        </Row>
-      </Panel>
-    </Collapse>
-  </div>
-</Col>
-</Row> */
-
