@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const StyledContainer = styled.div`
   width: 96vw;
-  height: 95vh;
+  height: 100vh;
   overflow: scroll;
   overflow-x:hidden;
   /* margin: 10px auto; */

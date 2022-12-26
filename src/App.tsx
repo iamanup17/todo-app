@@ -30,7 +30,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/new" element={<New />} />
           </Routes>
-            <div className="footer">Hello</div>
+            {/* <div className="footer">Hello</div> */}
 
           </div>
         </Wrapper>

@@ -19,16 +19,17 @@ interface TodosProps {
   category: string;
   defaultKey: boolean;
   handleDelete : (taskName : string)=>void;
-  handleEdit : (taskName : string)=>void
+  handleEdit : (taskName : string)=>void;
 }
 
 const Todos = (props: TodosProps) => {
   const { data, category, defaultKey , handleDelete , handleEdit} = props;
   const Head = <span style={{ color: "#1a1818" }}> {category}</span>;
 
+  // console.log(data)
   return (
     <Row gutter={[3, 12]} className="row-wrapper row-wrapper-collapse">
-      <Col className="gutter-row" lg={24} md={3} sm={2} xs={2}>
+      <Col className="gutter-row" lg={24} md={24} sm={24} xs={24}>
         <div className="content">
           <Collapse
             accordion
@@ -39,15 +40,16 @@ const Todos = (props: TodosProps) => {
             <Panel header={Head} key="1">
               <Row gutter={[12, 12]} className="row-wrapper">
                 {data.length == 0 && <h2>No Tasks Available </h2>}
-                {data?.map((item, index) => {
+                {data.map((item, index) => {
+                  // console.log(item) 
                   return (
                     <Col
                       key={index}
                       className="gutter-row"
                       lg={6}
-                      md={3}
-                      sm={2}
-                      xs={2}
+                      md={6}
+                      sm={6}
+                      xs={6}
                     >
                       <div className="content">
                         {" "}
@@ -60,9 +62,9 @@ const Todos = (props: TodosProps) => {
                             }}
                           />
                           <span>
-                            {item.title}
+                            {item?.title}
                             <small>
-                              {item.description}
+                              {item?.description}
                             </small>
                           </span>
                         </div>
@@ -72,6 +74,7 @@ const Todos = (props: TodosProps) => {
                               <EditOutlined
                               onClick={() => { 
                                 handleEdit(item.title)
+                                // console.log(item)
                                }}
                                 style={{ color: "blue", fontSize: "1.1rem" }}
                               />

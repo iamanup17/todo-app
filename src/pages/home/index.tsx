@@ -1,6 +1,15 @@
-import React, { FC, useState } from "react";
+import React, { ChangeEvent, FC, FormEvent, useRef, useState } from "react";
 import styled from "styled-components";
-import { Row, Form, Col, Input, Button, Checkbox, Modal } from "antd";
+import {
+  Row,
+  Form,
+  Col,
+  Input,
+  Button,
+  Checkbox,
+  Modal,
+  Descriptions,
+} from "antd";
 import {
   GlobalOutlined,
   DownOutlined,
@@ -15,6 +24,9 @@ import Header from "../../components/Header";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import type { FormInstance } from "antd/es/form";
+import FormItem from "antd/es/form/FormItem";
+
 export interface IData {
   title: string;
   description: string;
@@ -22,15 +34,24 @@ export interface IData {
 }
 
 const Home: FC = () => {
-  const initial = {
-    title: "Default",
-    description: "Default",
-    url: "Default",
-  };
+
+
+  const formRef = React.createRef<FormInstance>();
+
+  // const initial = {
+  //   title: "Default",
+  //   description: "Default",
+  //   url: "Default",
+  // };
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [updateBtn, setUpdateBtn] = useState(false);
+
+  const [taskToUpdate, setTaskToUpdate] = useState("");
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState<IData[]>([initial]);
+  const [data, setData] = useState<IData[]>([]);
+
+
 
   const handleOk = () => {
     alert("OK clicked");
@@ -43,11 +64,14 @@ const Home: FC = () => {
 
   const handleCancel = () => {
     setOpen(false);
+    form.resetFields();
+    setUpdateBtn(false);
   };
 
   const showModal = () => {
     setOpen(true);
   };
+
   const notifySuccess = (x: string) =>
     toast.success(x, {
       position: "top-center",
@@ -62,15 +86,42 @@ const Home: FC = () => {
 
   const onFinish = (values: any) => {
     console.log("Success:", values);
-    setData([...data, values]);
-    form.resetFields();
-    notifySuccess("Task Added SuccessFully");
+    if (updateBtn) {
+      console.log("updating data")
+      setData(
+       
 
-    setTimeout(() => {
+        data.map((el:any) => {
+          console.log(el)
+          if (el.title === taskToUpdate) {
+            return {
+             ...el,
+              title: values.title,
+              description: values.description,
+              url: values.url,
+            };
+          }
+          return el
+        })
+      );
+      notifySuccess("Task Updated Successfully")
       handleCancel();
-    }, 500);
+    }
+    // else if (!update) {
+    if (!updateBtn) {
+      console.log("Adding data");
+      setData([...data, values]);
+      form.resetFields();
+      notifySuccess("Task Added SuccessFully");
+
+      setTimeout(() => {
+        handleCancel();
+      }, 500);
+    }
+    // }
   };
 
+  console.log(data)
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
@@ -84,11 +135,26 @@ const Home: FC = () => {
     notifySuccess("Task Deleted SuccessFully");
   };
 
-  const  handleEdit = (taskName: string) => {
-    showModal()
-    console.log(form.getFieldValue)
-    // notifySuccess("Task Deleted SuccessFully");
+  const handleEdit = (taskName: string) => {
+    setUpdateBtn(true);
+    setTaskToUpdate(taskName);
+    
+    const xx = data.find((x) => x.title === taskName);
+    console.log(xx);
+    showModal();
+
+    form.setFieldsValue({
+      title: xx?.title,
+      description: xx?.description,
+      url: xx?.url,
+    });
+
+
+
+    console.log(taskName)
+
   };
+
 
  
 
@@ -137,6 +203,7 @@ const Home: FC = () => {
                 <Col className="gutter-row" lg={24} md={24} sm={16} xs={24}>
                   <div className="content">
                     <Form
+                      ref={formRef}
                       form={form}
                       labelCol={{ span: 24 }}
                       wrapperCol={{ span: 24 }}
@@ -182,7 +249,7 @@ const Home: FC = () => {
                         <Col span={6}>
                           <Form.Item wrapperCol={{ span: 24 }}>
                             <Button type="primary" block htmlType="submit">
-                              Save
+                              {updateBtn ? "Update" : "Save"}
                             </Button>
                           </Form.Item>
                         </Col>
@@ -192,6 +259,37 @@ const Home: FC = () => {
                 </Col>
               </Row>
             </Modal>
+
+            {/* MODAL 2 */}
+            {/* <Modal
+              title="Basic Modal"
+              open={isModalOpen}
+              onOk={handleOk2}
+              onCancel={handleCancel2}
+            >
+              <form onSubmit={handleSubmit2}>
+                <input
+                  type="text"
+                  name="title"
+                  onChange={(e) => handleChange2(e)}
+                  value={inputData.title2}
+                />
+                <input
+                  type="text"
+                  name="description"
+                  onChange={(e) => handleChange2(e)}
+                  value={inputData.description2}
+                />
+                <input
+                  type="text"
+                  name="url"
+                  onChange={(e) => handleChange2(e)}
+                  value={inputData.url2}
+                />
+                <button>submit</button>
+              </form>
+            </Modal> */}
+            {/* MODAL 2 */}
           </div>
         </Col>
       </Row>
@@ -201,6 +299,14 @@ const Home: FC = () => {
       <Todos
         data={data}
         category="General"
+        defaultKey={true}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
+
+      <Todos
+        data={data}
+        category="Technology"
         defaultKey={true}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
