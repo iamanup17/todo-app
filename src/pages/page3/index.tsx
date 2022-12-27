@@ -1,13 +1,17 @@
 import React from "react";
 import { StyledContainer } from "../../styles/Styles";
 
-const New = () => {
+const Page3 = () => {
   return (
     <StyledContainer className="">
 
-      eveniet nobis delectus optio provident, nisi deleniti non amet vitae
-      explicabo possimus tempore quae id alias aliquid? Accusantium odit eaque
-      ducimuimos enim corporis
+      cumque illum animi maxime dolorem. Enim nobis molestias suscipit
+      cupiditate soluta voluptas laboriosam debitis sed unde atque quod rerum
+      architecto iusto illum distinctio, quam illo ut veniam, provident magni
+      accusantium labore! Cumque autem ex officia, velit iste odit, minus sunt
+      eius quibusdam voluptatem quam veniam officiis suscipit delectus aperiam
+      voluptate itaque. Unde enim obcaecati in maiores suscipit odit voluptatem
+      asperiores incidunt deserunt? A quidem nobis sit dignissimos enim corporis
       soluta nisi unde asperiores vel, quod dicta nihil explicabo cupiditate
       nulla rerum esse laborum! Voluptate quibusdam voluptatem repellendus est
       saepe dolorem, eos praesentium ipsam voluptas minus? Expedita
@@ -19,4 +23,4 @@ const New = () => {
   );
 };
 
-export default New;
+export default Page3;

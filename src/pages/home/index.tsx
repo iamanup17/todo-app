@@ -1,5 +1,8 @@
 import React, { ChangeEvent, FC, FormEvent, useRef, useState } from "react";
 import styled from "styled-components";
+// import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+
 import {
   Row,
   Form,
@@ -9,6 +12,7 @@ import {
   Checkbox,
   Modal,
   Descriptions,
+  Select,
 } from "antd";
 import {
   GlobalOutlined,
@@ -17,7 +21,6 @@ import {
   UnlockOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Collapse } from "antd";
 import Todos from "../../components/Todos";
 import { StyledContainer } from "../../styles/Styles";
 import Header from "../../components/Header";
@@ -25,24 +28,27 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import type { FormInstance } from "antd/es/form";
-import FormItem from "antd/es/form/FormItem";
 
 export interface IData {
+  id: string;
   title: string;
   description: string;
   url: string;
+  category: string;
 }
 
 const Home: FC = () => {
-
-
   const formRef = React.createRef<FormInstance>();
+  const { Option } = Select;
 
-  // const initial = {
-  //   title: "Default",
-  //   description: "Default",
-  //   url: "Default",
-  // };
+  let categories = [
+    "All Tasks",
+    "General",
+    "Technology",
+    "Health & Hobbies",
+    "Others",
+  ];
+
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [updateBtn, setUpdateBtn] = useState(false);
@@ -51,7 +57,46 @@ const Home: FC = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<IData[]>([]);
 
+  const [cat, setCat] = useState([
+    {
+      General: [
+        {
+          title: "",
+          description: "",
+          url: "",
+        },
+      ],
+    },
+    {
+      Technology: [
+        {
+          title: "",
+          description: "",
+          url: "",
+        },
+      ],
+    },
+    {
+      Health: [
+        {
+          title: "",
+          description: "",
+          url: "",
+        },
+      ],
+    },
+    {
+      Others: [
+        {
+          title: "",
+          description: "",
+          url: "",
+        },
+      ],
+    },
+  ]);
 
+  console.log(cat.map((x) => x.General));
 
   const handleOk = () => {
     alert("OK clicked");
@@ -84,33 +129,62 @@ const Home: FC = () => {
       theme: "light",
     });
 
+  // {categories.map((item) => {
+  //   return (
+  //     <Todos
+  //       data={data.filter(
+  //         (elem) => {
+  //           if (item == "All") {
+  //             return data;
+  //           } else {
+  //             return elem.category === item;
+  //           }
+  //         }
+  //       )}
+  //       category={item}
+  //       defaultKey={true}
+  //       handleDelete={handleDelete}
+  //       handleEdit={handleEdit}
+  //     />
+  //   );
+  // })}
+
   const onFinish = (values: any) => {
     console.log("Success:", values);
-    if (updateBtn) {
-      console.log("updating data")
-      setData(
-       
 
-        data.map((el:any) => {
-          console.log(el)
-          if (el.title === taskToUpdate) {
+
+
+    if (updateBtn) {
+      console.log("updating data");
+      setData(
+        data.map((el: any) => {
+          console.log(el);
+          if (el.id === taskToUpdate) {
             return {
-             ...el,
+              ...el,
+              id: values.id,
               title: values.title,
               description: values.description,
               url: values.url,
+              category: values.category,
             };
           }
-          return el
+          return el;
         })
       );
-      notifySuccess("Task Updated Successfully")
+      notifySuccess("Task Updated Successfully");
       handleCancel();
     }
     // else if (!update) {
     if (!updateBtn) {
       console.log("Adding data");
-      setData([...data, values]);
+
+      const id = {
+        id: uuidv4(),
+        ...values,
+      };
+
+      setData([...data, id]);
       form.resetFields();
       notifySuccess("Task Added SuccessFully");
 
@@ -121,25 +195,26 @@ const Home: FC = () => {
     // }
   };
 
-  console.log(data)
+  console.log(data);
+
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
 
-  const handleDelete = (taskName: string) => {
+  const handleDelete = (id: string) => {
     setData(
       data.filter((task) => {
-        return task.title !== taskName;
+        return task.id !== id;
       })
     );
     notifySuccess("Task Deleted SuccessFully");
   };
 
-  const handleEdit = (taskName: string) => {
+  const handleEdit = (id: string) => {
     setUpdateBtn(true);
-    setTaskToUpdate(taskName);
-    
-    const xx = data.find((x) => x.title === taskName);
+    setTaskToUpdate(id);
+
+    const xx = data.find((x) => x.id === id);
     console.log(xx);
     showModal();
 
@@ -147,23 +222,10 @@ const Home: FC = () => {
       title: xx?.title,
       description: xx?.description,
       url: xx?.url,
+      category: xx?.category,
     });
-
-
-
-    console.log(taskName)
-
+    console.log(id);
   };
-
-
- 
-
-  const Head = (
-    <span style={{ color: "white" }}>
-      {" "}
-      General <DownOutlined />
-    </span>
-  );
 
   return (
     <StyledContainer className="">
@@ -194,7 +256,6 @@ const Home: FC = () => {
 
             <Modal
               open={open}
-              //   title="Title"
               onOk={handleOk}
               onCancel={handleCancel}
               footer={false}
@@ -224,6 +285,27 @@ const Home: FC = () => {
                       >
                         <Input />
                       </Form.Item>
+
+                      <Form.Item
+                        name="category"
+                        label="Category"
+                        // rules={[{ required: true }]}
+                      >
+                        <Select
+                          placeholder="Select a category"
+                          // onChange={onGenderChange}
+                          allowClear
+                        >
+                          {categories.map((item) => (
+                            <Option value={item}>{item}</Option>
+                          ))}
+                          {/* <Option value="general">General</Option>
+                          <Option value="technology">Technology</Option>
+                          <Option value="health">Health & Hobbies</Option>
+                          <Option value="others">Others</Option> */}
+                        </Select>
+                      </Form.Item>
+
                       <Form.Item name="description" label="Description">
                         <Input.TextArea />
                       </Form.Item>
@@ -234,7 +316,7 @@ const Home: FC = () => {
                       <Row gutter={12}>
                         <Col span={6}>
                           <Form.Item wrapperCol={{ span: 24 }}>
-                            <Button type="primary" danger block>
+                            <Button type="primary" danger block disabled>
                               Delete
                             </Button>
                           </Form.Item>
@@ -259,45 +341,33 @@ const Home: FC = () => {
                 </Col>
               </Row>
             </Modal>
-
-            {/* MODAL 2 */}
-            {/* <Modal
-              title="Basic Modal"
-              open={isModalOpen}
-              onOk={handleOk2}
-              onCancel={handleCancel2}
-            >
-              <form onSubmit={handleSubmit2}>
-                <input
-                  type="text"
-                  name="title"
-                  onChange={(e) => handleChange2(e)}
-                  value={inputData.title2}
-                />
-                <input
-                  type="text"
-                  name="description"
-                  onChange={(e) => handleChange2(e)}
-                  value={inputData.description2}
-                />
-                <input
-                  type="text"
-                  name="url"
-                  onChange={(e) => handleChange2(e)}
-                  value={inputData.url2}
-                />
-                <button>submit</button>
-              </form>
-            </Modal> */}
-            {/* MODAL 2 */}
           </div>
         </Col>
       </Row>
       {/* <Navbar/> */}
 
       {/* CATEGORIES */}
-      <Todos
-        data={data}
+
+      {categories.map((item) => {
+        return (
+          <Todos
+            data={data.filter((elem) => {
+              if (item == "All Tasks") {
+                return data;
+              } else {
+                return elem.category === item;
+              }
+            })}
+            category={item}
+            defaultKey={true}
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+          />
+        );
+      })}
+
+      {/* <Todos
+        data={data.filter((item) => item.category === "general")}
         category="General"
         defaultKey={true}
         handleDelete={handleDelete}
@@ -305,16 +375,33 @@ const Home: FC = () => {
       />
 
       <Todos
-        data={data}
+        data={data.filter((item) => item.category === "technology")}
         category="Technology"
-        defaultKey={true}
+        defaultKey={false}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
       />
-      {/* <Todos data={data} category="Technology" defaultKey={false} /> */}
-      {/* <Todos data={data} category="Technology" defaultKey={false} /> */}
-      {/* <Todos data={data} category="Technology" defaultKey={false} /> */}
-      {/* <Todos data={data} category="Technology" defaultKey={false} /> */}
+      <Todos
+        data={data.filter((item) => item.category === "health")}
+        category="Health & Hobbies"
+        defaultKey={false}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
+      <Todos
+        data={data.filter((item) => item.category === 'others')}
+        category="Others"
+        defaultKey={false}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
+      <Todos
+        data={data}
+        category="All"
+        defaultKey={false}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      /> */}
     </StyledContainer>
   );
 };

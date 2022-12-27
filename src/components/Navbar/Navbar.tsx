@@ -32,10 +32,25 @@ const StyledNavbar = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    .content {
+      a {
+        color: gray;
+        &:active {
+          color: #47ceff;
+        }
+      }
+    }
   }
 `;
 
 const Navbar = () => {
+  let activeStyle = {
+    textDecoration: "underline",
+    color: " #47ceff",
+  };
+
+  let activeClassName = "underline";
+
   return (
     <StyledNavbar>
       <Row gutter={12} className="Logo">
@@ -49,30 +64,45 @@ const Navbar = () => {
       <Row gutter={12} className=" Logo nav-links">
         <Col className="gutter-row" span={24}>
           <div className="content">
-            <NavLink to="/" className="active">
+            <NavLink
+              style={({ isActive }) => (isActive ? activeStyle : undefined)}
+              to="/"
+            >
               <AppstoreOutlined style={{ fontSize: "2rem" }} />
             </NavLink>
           </div>
         </Col>
         <Col className="gutter-row" span={24}>
           <div className="content">
-            <NavLink to="/new">
+            <NavLink
+              to="/new"
+              style={({ isActive }) => (isActive ? activeStyle : undefined)}
+
+            >
               <AimOutlined style={{ fontSize: "2rem" }} />
             </NavLink>
           </div>
         </Col>
         <Col className="gutter-row" span={24}>
           <div className="content">
-            <NavLink to="/new3">
+            <NavLink
+              to="/new3"
+              style={({ isActive }) => (isActive ? activeStyle : undefined)}
+
+            >
               <BankOutlined style={{ fontSize: "2rem" }} />
             </NavLink>
           </div>
         </Col>
         <Col className="gutter-row" span={24}>
           <div className="content">
-            <Link to="/new4">
+            <NavLink
+              to="/new4"
+              style={({ isActive }) => (isActive ? activeStyle : undefined)}
+
+            >
               <BuildOutlined style={{ fontSize: "2rem" }} />
-            </Link>
+            </NavLink>
           </div>
         </Col>
       </Row>

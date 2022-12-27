@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const StyledContainer = styled.div`
   width: 96vw;
-  height: 100vh;
+  height: 95vh;
   overflow: scroll;
   overflow-x:hidden;
   /* margin: 10px auto; */
@@ -58,8 +58,11 @@ export const StyledContainer = styled.div`
 
   .row-wrapper-collapse {
     padding-bottom: 10px;
-    border-bottom: 1px solid gray;
-    height:100%;
+    border-bottom: 1px solid #cccccc;
+    /* height:100%; */
+    &:last-child{
+      border:none;
+    }
     
     .row-wrapper .content {
       flex-direction: column;
@@ -91,7 +94,7 @@ export const StyledContainer = styled.div`
     }
     .ant-collapse .ant-collapse-item .ant-collapse-header {
       /* background:orange!important; */
-      width: 100px;
+      width: 220px;
       color: #1a1818;
     }
   }
