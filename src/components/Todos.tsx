@@ -5,8 +5,10 @@ import {
   GlobalOutlined,
 } from "@ant-design/icons";
 import { Col, Collapse, Row } from "antd";
-import React from "react";
+import React, { ReactNode } from "react";
 import { Button } from "./Buttons/Button";
+import Card from "./Cards/Card";
+import Icon from "./Icons/Icon";
 
 const { Panel } = Collapse;
 
@@ -18,15 +20,29 @@ interface TodosProps {
     url: string;
     category: string;
   }[];
+  icon: ReactNode;
   category: string;
   defaultKey: boolean;
   handleDelete: (id: string) => void;
   handleEdit: (id: string) => void;
+  handleComplete: (id: string) => void;
+  show: boolean;
 }
 
 const Todos = (props: TodosProps) => {
-  const { data, category, defaultKey, handleDelete, handleEdit } = props;
-  const Head = <span style={{ color: "#1a1818" }}> {category}</span>;
+  const {
+    data,
+    category,
+    defaultKey,
+    handleDelete,
+    handleEdit,
+    handleComplete,
+    show,
+    icon,
+  } = props;
+  const Head = (
+    <span style={{ fontSize: "1.1rem", color: "#424242" }}> {category}</span>
+  );
 
   return (
     <Row gutter={[3, 12]} className="row-wrapper row-wrapper-collapse">
@@ -39,63 +55,13 @@ const Todos = (props: TodosProps) => {
             defaultActiveKey={defaultKey ? ["1"] : ""}
           >
             <Panel header={Head} key="1">
-              <Row gutter={[12, 12]} className="row-wrapper">
-                {data.length == 0 && <h5>No Tasks Available </h5>}
-                {data.map((item, index) => {
-                  return (
-                    <Col
-                      key={index}
-                      className="gutter-row"
-                      lg={6}
-                      md={8}
-                      sm={12}
-                      xs={24}
-                    >
-                      <div className="content">
-                        {" "}
-                        <div>
-                          <GlobalOutlined
-                            style={{
-                              fontSize: "1.4rem",
-                              margin: "4px 2px 0px 5px",
-                              color: "#99efd5",
-                            }}
-                          />
-                          <span style={{ fontWeight: "500" }}>
-                            {item?.title}
-                            <small>{item?.description}</small>
-                          </span>
-                        </div>
-                        <Row>
-                          <Col span={2} offset={22}>
-                            <span>
-                              <EditOutlined
-                                onClick={() => {
-                                  handleEdit(item.id);
-                                  // console.log(item)
-                                }}
-                                style={{ color: "blue", fontSize: "1.1rem" }}
-                              />
-                            </span>
-                            <span>
-                              <DeleteOutlined
-                                onClick={() => {
-                                  handleDelete(item.id);
-                                }}
-                                style={{ color: "red", fontSize: "1.1rem" }}
-                              />
-                            </span>
-                          </Col>
-                        </Row>
-                        {/* <div>
-                          <Button text="Edit" />
-                          <Button text="Delete" />
-                        </div> */}
-                      </div>
-                    </Col>
-                  );
-                })}
-              </Row>
+              <Card
+                data={data}
+                icon={icon}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+                handleComplete={handleComplete}
+              />
             </Panel>
           </Collapse>
         </div>
