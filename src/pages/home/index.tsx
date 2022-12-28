@@ -1,7 +1,7 @@
-import React, { ChangeEvent, FC, FormEvent, useRef, useState } from "react";
-import styled from "styled-components";
+import React, { ChangeEvent, FC, FormEvent, useRef, useState } from 'react';
+import styled from 'styled-components';
 // import { v4 as uuidv4 } from 'uuid';
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   Row,
@@ -14,7 +14,7 @@ import {
   Descriptions,
   Select,
   Collapse,
-} from "antd";
+} from 'antd';
 import {
   GlobalOutlined,
   DownOutlined,
@@ -27,15 +27,15 @@ import {
   NotificationOutlined,
   ReadOutlined,
   ForkOutlined,
-} from "@ant-design/icons";
-import Todos from "../../components/Todos";
-import { StyledContainer } from "../../styles/Styles";
-import Header from "../../components/Header";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+} from '@ant-design/icons';
+import Todos from '../../components/Todos';
+import { StyledContainer } from '../../styles/Styles';
+import Header from '../../components/Header';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import type { FormInstance } from "antd/es/form";
-import { icons } from "antd/es/image/PreviewGroup";
+import type { FormInstance } from 'antd/es/form';
+import { icons } from 'antd/es/image/PreviewGroup';
 
 export interface IData {
   id: string;
@@ -58,70 +58,83 @@ interface INew {
   }[];
 }
 
+interface ID33 {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  isCompleted: boolean;
+}
+
 const Home: FC = () => {
   const { Panel } = Collapse;
 
-  const formRef1 = React.createRef<FormInstance>();
-  const formRef2= React.createRef<FormInstance>();
+  const formRef = React.createRef<FormInstance>();
+  // const formRef2 = React.createRef<FormInstance>();
   const { Option } = Select;
 
   let categories = [
     {
-      name: "All Tasks",
-      icon: <NodeCollapseOutlined style={{ color: "gray" }} />,
+      name: 'All Tasks',
+      icon: <NodeCollapseOutlined style={{ color: 'gray' }} />,
     },
     {
-      name: "General",
-      icon: <NotificationOutlined style={{ color: "green" }} />,
+      name: 'General',
+      icon: <NotificationOutlined style={{ color: 'green' }} />,
     },
     {
-      name: "Technology",
-      icon: <LaptopOutlined style={{ color: "orange" }} />,
+      name: 'Technology',
+      icon: <LaptopOutlined style={{ color: 'orange' }} />,
     },
     {
-      name: "Health & Hobbies",
-      icon: <ForkOutlined style={{ color: "blue" }} />,
+      name: 'Health & Hobbies',
+      icon: <ForkOutlined style={{ color: 'blue' }} />,
     },
     {
-      name: "Others",
-      icon: <ReadOutlined style={{ color: "yellow" }} />,
+      name: 'Others',
+      icon: <ReadOutlined style={{ color: 'yellow' }} />,
     },
   ];
 
   // const [form1] = Form.useForm();
-  const [form] = Form.useForm();
+  const [form1] = Form.useForm();
+  const [form2] = Form.useForm();
+  const [form3] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [updateBtn, setUpdateBtn] = useState(false);
 
-  const [taskToUpdate, setTaskToUpdate] = useState("");
+  const [taskToUpdate, setTaskToUpdate] = useState('');
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<IData[]>([]);
 
   //
   const [open2, setOpen2] = useState(false);
+  const [open3, setOpen3] = useState(false);
   const InitialData = [
     {
-      categoryN: "General",
-      icon: "icons",
+      categoryN: 'General',
+      icon: 'icons',
       datas: [
         {
-          id: "123",
-          title: "string",
-          description: "string",
-          url: "string",
+          id: '123',
+          title: 'string',
+          description: 'string',
+          url: 'string',
           isCompleted: false,
         },
       ],
     },
   ];
-  const [newData, setNewData] = useState<INew[]>(InitialData);
-
+  const [newData, setNewData] = useState<INew[]>([]);
+  const [showForm, setShowForm] = useState(false);
   console.log(newData);
+
+  const [data33, setData33] = useState<ID33[]>([]);
 
   // console.log(cat.map((x) => x.General));
 
   const handleOk = () => {
-    alert("OK clicked");
+    alert('OK clicked');
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -131,7 +144,7 @@ const Home: FC = () => {
 
   const handleCancel = () => {
     setOpen(false);
-    form.resetFields();
+    form1.resetFields();
     setUpdateBtn(false);
   };
 
@@ -140,7 +153,7 @@ const Home: FC = () => {
   };
   // :::::::::::::::::::::::::::::::::::::::::: NEW MODAL   ::::::::::::::::::::::::::::::::::::::::::::::
   const handleOk2 = () => {
-    alert("OK clicked");
+    alert('OK clicked');
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -150,7 +163,7 @@ const Home: FC = () => {
 
   const handleCancel2 = () => {
     setOpen2(false);
-    form.resetFields();
+    form2.resetFields();
     setUpdateBtn(false);
   };
 
@@ -159,48 +172,81 @@ const Home: FC = () => {
   };
 
   const onFinish2 = (values: any) => {
-
-    console.log("form 2 submitted")
+    console.log('category form submitted');
     console.log(values);
 
     const x = {
-      categoryN: values.cat,
-      icon: "icon1",
+      categoryN: values.categoryN,
+      icon: 'icon1',
       datas: [],
     };
 
     setNewData([...newData, x]);
 
-    notifySuccess("Category Added Successfully");
+    notifySuccess('Category Added Successfully');
     handleCancel2();
+    form1.resetFields();
+    showModal3();
+    setShowForm(true);
   };
 
   const onFinishFailed2 = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+    console.log('Failed:', errorInfo);
   };
 
   // :::::::::::::::::::::::::::::::::::::::::: NEW MODAL   ::::::::::::::::::::::::::::::::::::::::::::::
 
+  const handleOk3 = () => {
+    alert('OK clicked');
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setOpen(false);
+    }, 3000);
+  };
+
+  const handleCancel3 = () => {
+    setOpen3(false);
+    form3.resetFields();
+    setUpdateBtn(false);
+  };
+
+  const showModal3 = () => {
+    setOpen3(true);
+  };
+
+  const onFinish3 = (values: any) => {
+    console.log(values);
+
+    notifySuccess('Task Added Successfully');
+    handleCancel3();
+    form3.resetFields();
+  };
+
+  const onFinishFailed3 = (errorInfo: any) => {
+    console.log('Failed:', errorInfo);
+  };
+
   const notifySuccess = (x: string) =>
     toast.success(x, {
-      position: "top-center",
+      position: 'top-center',
       autoClose: 1000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      theme: "light",
+      theme: 'light',
     });
 
   const onFinish = (values: any) => {
     const { title, description, category, url } = values;
-    console.log("Success:", values);
+    console.log('Success:', values);
 
     // setNewData([...newData, values]);
 
     if (updateBtn) {
-      console.log("updating data");
+      console.log('updating data');
       setData(
         data.map((el: any) => {
           console.log(el);
@@ -218,12 +264,12 @@ const Home: FC = () => {
           return el;
         })
       );
-      notifySuccess("Task Updated Successfully");
+      notifySuccess('Task Updated Successfully');
       handleCancel();
     }
     // else if (!update) {
     if (!updateBtn) {
-      console.log("Adding data");
+      console.log('Adding data');
 
       const id = {
         id: uuidv4(),
@@ -232,8 +278,8 @@ const Home: FC = () => {
       };
 
       setData([...data, id]);
-      form.resetFields();
-      notifySuccess("Task Added SuccessFully");
+      form2.resetFields();
+      notifySuccess('Task Added SuccessFully');
 
       setTimeout(() => {
         handleCancel();
@@ -245,7 +291,7 @@ const Home: FC = () => {
   console.log(newData);
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+    console.log('Failed:', errorInfo);
   };
 
   const handleDelete = (id: string) => {
@@ -254,7 +300,7 @@ const Home: FC = () => {
         return task.id !== id;
       })
     );
-    notifySuccess("Task Deleted SuccessFully");
+    notifySuccess('Task Deleted SuccessFully');
   };
 
   const handleEdit = (id: string) => {
@@ -265,7 +311,7 @@ const Home: FC = () => {
     console.log(xx);
     showModal();
 
-    form.setFieldsValue({
+    form1.setFieldsValue({
       id: xx?.id,
       title: xx?.title,
       description: xx?.description,
@@ -309,7 +355,7 @@ const Home: FC = () => {
         <Col className="gutter-row" lg={4} md={3} sm={2} xs={2}>
           <div className="content">
             <Button onClick={showModal2} icon={<PlusOutlined />}>
-              {" "} 
+              {' '}
               ADD CATEGORY
             </Button>
 
@@ -323,8 +369,8 @@ const Home: FC = () => {
                 <Col className="gutter-row" lg={24} md={24} sm={16} xs={24}>
                   <div className="content">
                     <Form
-                      // ref={formRef1}
-                      // form={form}
+                      ref={formRef}
+                      form={form1}
                       labelCol={{ span: 24 }}
                       wrapperCol={{ span: 24 }}
                       layout="horizontal"
@@ -338,7 +384,7 @@ const Home: FC = () => {
                         rules={[
                           {
                             required: true,
-                            message: "Please Enter any category name",
+                            message: 'Please Enter any category name',
                           },
                         ]}
                       >
@@ -349,7 +395,18 @@ const Home: FC = () => {
                         <Col span={6}>
                           <Form.Item wrapperCol={{ span: 24 }}>
                             <Button type="primary" block htmlType="submit">
-                              {updateBtn ? "Update" : "Save"}
+                              {updateBtn ? 'Update' : 'Save'}
+                            </Button>
+                          </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                          <Form.Item wrapperCol={{ span: 24 }}>
+                            <Button
+                              type="primary"
+                              block
+                              onClick={handleCancel2}
+                            >
+                              cancel
                             </Button>
                           </Form.Item>
                         </Col>
@@ -365,7 +422,7 @@ const Home: FC = () => {
         <Col className="gutter-row" lg={4} md={3} sm={2} xs={2}>
           <div className="content">
             <Button onClick={showModal} icon={<PlusOutlined />}>
-              {" "}
+              {' '}
               ADD COLLECTION
             </Button>
 
@@ -379,8 +436,8 @@ const Home: FC = () => {
                 <Col className="gutter-row" lg={24} md={24} sm={16} xs={24}>
                   <div className="content">
                     <Form
-                      ref={formRef2}
-                      form={form}
+                      ref={formRef}
+                      form={form2}
                       labelCol={{ span: 24 }}
                       wrapperCol={{ span: 24 }}
                       layout="horizontal"
@@ -394,7 +451,7 @@ const Home: FC = () => {
                         rules={[
                           {
                             required: true,
-                            message: "Please Enter Task Title!",
+                            message: 'Please Enter Task Title!',
                           },
                         ]}
                       >
@@ -445,7 +502,7 @@ const Home: FC = () => {
                         <Col span={6}>
                           <Form.Item wrapperCol={{ span: 24 }}>
                             <Button type="primary" block htmlType="submit">
-                              {updateBtn ? "Update" : "Save"}
+                              {updateBtn ? 'Update' : 'Save'}
                             </Button>
                           </Form.Item>
                         </Col>
@@ -455,15 +512,86 @@ const Home: FC = () => {
                 </Col>
               </Row>
             </Modal>
+
+            {showForm && (
+              <Modal
+                open={open3}
+                onOk={handleOk3}
+                onCancel={handleCancel3}
+                footer={false}
+              >
+                <Row gutter={[24, 12]} className="row-wrapper">
+                  <Col className="gutter-row" lg={24} md={24} sm={16} xs={24}>
+                    <div className="content">
+                      <Form
+                        ref={formRef}
+                        form={form3}
+                        labelCol={{ span: 24 }}
+                        wrapperCol={{ span: 24 }}
+                        layout="horizontal"
+                        onFinish={onFinish3}
+                        onFinishFailed={onFinishFailed3}
+                        initialValues={{ remember: true }}
+                      >
+                        <Form.Item
+                          name="title"
+                          label="Title"
+                          rules={[
+                            {
+                              required: true,
+                              message: 'Please Enter Task Title!',
+                            },
+                          ]}
+                        >
+                          <Input />
+                        </Form.Item>
+
+                        <Form.Item name="description" label="Description">
+                          <Input.TextArea />
+                        </Form.Item>
+
+                        <Form.Item name="url" label="URL">
+                          <Input />
+                        </Form.Item>
+
+                        <Row gutter={12}>
+                          <Col span={6}>
+                            <Form.Item wrapperCol={{ span: 24 }}>
+                              <Button type="primary" danger block disabled>
+                                Delete
+                              </Button>
+                            </Form.Item>
+                          </Col>
+                          <Col span={6} offset={6}>
+                            <Form.Item wrapperCol={{ span: 24 }}>
+                              <Button block onClick={handleCancel3}>
+                                Cancel
+                              </Button>
+                            </Form.Item>
+                          </Col>
+                          <Col span={6}>
+                            <Form.Item wrapperCol={{ span: 24 }}>
+                              <Button type="primary" block htmlType="submit">
+                                {updateBtn ? 'Update' : 'Save'}
+                              </Button>
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </Form>
+                    </div>
+                  </Col>
+                </Row>
+              </Modal>
+            )}
           </div>
         </Col>
       </Row>
       {/* <Navbar/> */}
 
-      <Collapse defaultActiveKey={["1"]} ghost>
+      <Collapse defaultActiveKey={['1']} ghost>
         {newData.map((i, index) => {
           return (
-            <Panel header={"title"} key={index + 1}>
+            <Panel header={i.categoryN} key={index + 1}>
               <p>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 Necessitatibus, provident velit autem amet quisquam porro modi
@@ -480,7 +608,7 @@ const Home: FC = () => {
           <Todos
             key={item.name}
             data={data.filter((elem) => {
-              if (item.name == "All Tasks") {
+              if (item.name == 'All Tasks') {
                 return data;
               } else {
                 return elem.category === item.name;
@@ -488,11 +616,11 @@ const Home: FC = () => {
             })}
             category={item.name}
             icon={item.icon}
-            defaultKey={item.name === "All Tasks" ? true : false}
+            defaultKey={item.name === 'All Tasks' ? true : false}
             handleDelete={handleDelete}
             handleEdit={handleEdit}
             handleComplete={handleComplete}
-            show={item.name === "All Tasks" && true}
+            show={item.name === 'All Tasks' && true}
           />
         );
       })}

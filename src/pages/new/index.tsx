@@ -1,22 +1,432 @@
-import React from "react";
-import { StyledContainer } from "../../styles/Styles";
+import React, { ChangeEvent, FC, FormEvent, useRef, useState } from 'react';
+import styled from 'styled-components';
+// import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
-const New = () => {
+import {
+  Row,
+  Form,
+  Col,
+  Input,
+  Button,
+  Checkbox,
+  Modal,
+  Descriptions,
+  Select,
+  Collapse,
+} from 'antd';
+import {
+  GlobalOutlined,
+  DownOutlined,
+  UserOutlined,
+  UnlockOutlined,
+  PlusOutlined,
+  LaptopOutlined,
+  MailOutlined,
+  NodeCollapseOutlined,
+  NotificationOutlined,
+  ReadOutlined,
+  ForkOutlined,
+} from '@ant-design/icons';
+import Todos from '../../components/Todos';
+import { StyledContainer } from '../../styles/Styles';
+import Header from '../../components/Header';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import type { FormInstance } from 'antd/es/form';
+import { icons } from 'antd/es/image/PreviewGroup';
+import Todos2 from '../../components/Todos2';
+
+export interface IData {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  category: string;
+  isCompleted: boolean;
+}
+
+interface INew {
+  category: string;
+  icon: string;
+  datas: {
+    id: string;
+    title: string;
+    description: string;
+    url: string;
+    isCompleted: boolean;
+  }[];
+}
+
+const Home: FC = () => {
+  const { Panel } = Collapse;
+
+  const formRef = React.createRef<FormInstance>();
+  // const formRef2 = React.createRef<FormInstance>();
+  const { Option } = Select;
+
+  let categories = [
+    {
+      name: 'All Tasks',
+      icon: <NodeCollapseOutlined style={{ color: 'gray' }} />,
+    },
+    {
+      name: 'General',
+      icon: <NotificationOutlined style={{ color: 'green' }} />,
+    },
+    {
+      name: 'Technology',
+      icon: <LaptopOutlined style={{ color: 'orange' }} />,
+    },
+    {
+      name: 'Health & Hobbies',
+      icon: <ForkOutlined style={{ color: 'blue' }} />,
+    },
+    {
+      name: 'Others',
+      icon: <ReadOutlined style={{ color: 'yellow' }} />,
+    },
+  ];
+
+  // const [form1] = Form.useForm();
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [updateBtn, setUpdateBtn] = useState(false);
+
+  const [taskToUpdate, setTaskToUpdate] = useState('');
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState<IData[]>([]);
+
+  const [newData, setNewData] = useState<INew[]>([]);
+  //
+
+  const [showForm, setShowForm] = useState(false);
+  console.log(newData);
+
+  // console.log(cat.map((x) => x.General));
+
+  const handleOk = () => {
+    alert('OK clicked');
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setOpen(false);
+    }, 3000);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+    form.resetFields();
+    setUpdateBtn(false);
+  };
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const notifySuccess = (x: string) =>
+    toast.success(x, {
+      position: 'top-center',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
+
+  const onFinish = (values: any) => {
+    const { title, description, category, url } = values;
+    console.log('Success:', values);
+
+    const x = {
+      category: values.category,
+      icon: 'icon1',
+      datas: data && data,
+    };
+
+    setNewData([...newData, x]);
+
+    // setNewData([...newData, values]);
+
+    if (updateBtn) {
+      console.log('updating data');
+      setData(
+        data.map((el: any) => {
+          console.log(el);
+          if (el.id === taskToUpdate) {
+            return {
+              ...el,
+              id: uuidv4(),
+              isCompleted: false,
+              title: values.title,
+              description: values.description,
+              url: values.url,
+              category: values.category,
+            };
+          }
+          return el;
+        })
+      );
+      notifySuccess('Task Updated Successfully');
+      handleCancel();
+    }
+    // else if (!update) {
+    if (!updateBtn) {
+      console.log('Adding data');
+
+      const id = {
+        id: uuidv4(),
+        isCompleted: false,
+        ...values,
+      };
+
+      setData([...data, id]);
+      form.resetFields();
+      notifySuccess('Task Added SuccessFully');
+
+      setTimeout(() => {
+        handleCancel();
+      }, 500);
+    }
+    // }
+  };
+
+  const onFinishFailed = (errorInfo: any) => {
+    console.log('Failed:', errorInfo);
+  };
+
+  const handleDelete = (id: string) => {
+    setData(
+      data.filter((task) => {
+        return task.id !== id;
+      })
+    );
+    notifySuccess('Task Deleted SuccessFully');
+  };
+
+  const handleEdit = (id: string) => {
+    setUpdateBtn(true);
+    setTaskToUpdate(id);
+
+    const xx = data.find((x) => x.id === id);
+    console.log(xx);
+    showModal();
+
+    form.setFieldsValue({
+      id: xx?.id,
+      title: xx?.title,
+      description: xx?.description,
+      url: xx?.url,
+      category: xx?.category,
+    });
+    console.log(id);
+  };
+
   return (
     <StyledContainer className="">
+      <Header />
+      <ToastContainer />
+      <Row gutter={[3, 12]} className="row-wrapper-nav">
+        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
+          <div className="content">DRAG & DROP </div>
+        </Col>
+        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
+          <div className="content">TAG FILTER</div>
+        </Col>
+        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
+          <div className="content">VIEW</div>
+        </Col>
+        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
+          <div className="content">EXPAND</div>
+        </Col>
+        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
+          <div className="content">COLLAPSE</div>
+        </Col>
 
-      eveniet nobis delectus optio provident, nisi deleniti non amet vitae
-      explicabo possimus tempore quae id alias aliquid? Accusantium odit eaque
-      ducimuimos enim corporis
-      soluta nisi unde asperiores vel, quod dicta nihil explicabo cupiditate
-      nulla rerum esse laborum! Voluptate quibusdam voluptatem repellendus est
-      saepe dolorem, eos praesentium ipsam voluptas minus? Expedita
-      reprehenderit laboriosam repudiandae, rerum perspiciatis eius voluptates
-      nobis cum corporis accusamus libero vero mollitia omnis voluptate nisi
-      cupiditate explicabo corrupti eligendi dolore facilis! Harum doloremque
-      nesciunt corporis laboriosam vel esse, fugiat totam.
+        <Col className="gutter-row" lg={4} md={3} sm={2} xs={2}>
+          <div className="content">
+            <Button onClick={showModal} icon={<PlusOutlined />}>
+              {' '}
+              ADD COLLECTION
+            </Button>
+
+            <Modal
+              open={open}
+              onOk={handleOk}
+              onCancel={handleCancel}
+              footer={false}
+            >
+              <Row gutter={[24, 12]} className="row-wrapper">
+                <Col className="gutter-row" lg={24} md={24} sm={16} xs={24}>
+                  <div className="content">
+                    <Form
+                      ref={formRef}
+                      form={form}
+                      labelCol={{ span: 24 }}
+                      wrapperCol={{ span: 24 }}
+                      layout="horizontal"
+                      onFinish={onFinish}
+                      onFinishFailed={onFinishFailed}
+                      initialValues={{ remember: true }}
+                    >
+                      <Form.Item
+                        name="title"
+                        label="Title"
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Enter Task Title!',
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="category"
+                        label="Category"
+                        // rules={[{ required: true }]}
+                      >
+                        <Select
+                          placeholder="Select a category"
+                          // onChange={onGenderChange}
+                          allowClear
+                        >
+                          {categories.map((item, index) => (
+                            <Option key={index} value={item.name}>
+                              {item.name}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+
+                      <Form.Item name="description" label="Description">
+                        <Input.TextArea />
+                      </Form.Item>
+
+                      <Form.Item name="url" label="URL">
+                        <Input />
+                      </Form.Item>
+
+                      <Row gutter={12}>
+                        <Col span={6}>
+                          <Form.Item wrapperCol={{ span: 24 }}>
+                            <Button type="primary" danger block disabled>
+                              Delete
+                            </Button>
+                          </Form.Item>
+                        </Col>
+                        <Col span={6} offset={6}>
+                          <Form.Item wrapperCol={{ span: 24 }}>
+                            <Button block onClick={handleCancel}>
+                              Cancel
+                            </Button>
+                          </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                          <Form.Item wrapperCol={{ span: 24 }}>
+                            <Button type="primary" block htmlType="submit">
+                              {updateBtn ? 'Update' : 'Save'}
+                            </Button>
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </div>
+                </Col>
+              </Row>
+            </Modal>
+          </div>
+        </Col>
+      </Row>
+      {/* <Navbar/> */}
+
+      <Collapse defaultActiveKey={['1']} ghost>
+        {newData.map((i, index) => {
+          return (
+            <Panel header={i.category} key={index + 1}>
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Necessitatibus, provident velit autem amet quisquam porro modi
+                fugit suscipit deserunt dolorem consequatur eos quo!
+              </p>
+              {data.map((item, index) => {
+                return (
+                  <>
+                    <p>{item.title}</p>
+                    <p>{item.description}</p>
+                    <p>{item.url}</p>
+                  </>
+                );
+              })}
+            </Panel>
+          );
+        })}
+      </Collapse>
+
+      {/* CATEGORIES */}
+      {/* {categories.map((item, index) => {
+        return (
+          <Todos2
+            key={item.name}
+            data={data.filter((elem) => {
+              if (item.name == 'All Tasks') {
+                return data;
+              } else {
+                return elem.category === item.name;
+              }
+            })}
+            category={item.name}
+            icon={item.icon}
+            defaultKey={item.name === 'All Tasks' ? true : false}
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+            show={item.name === 'All Tasks' && true}
+          />
+        );
+      })} */}
+
+      {/* <Todos
+        data={data.filter((item) => item.category === "general")}
+        category="General"
+        defaultKey={true}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
+
+      <Todos
+        data={data.filter((item) => item.category === "technology")}
+        category="Technology"
+        defaultKey={false}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
+      <Todos
+        data={data.filter((item) => item.category === "health")}
+        category="Health & Hobbies"
+        defaultKey={false}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
+      <Todos
+        data={data.filter((item) => item.category === 'others')}
+        category="Others"
+        defaultKey={false}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
+      <Todos
+        data={data}
+        category="All"
+        defaultKey={false}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      /> */}
     </StyledContainer>
   );
 };
 
-export default New;
+export default Home;
