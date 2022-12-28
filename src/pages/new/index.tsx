@@ -243,7 +243,7 @@ const Home: FC = () => {
           <div className="content">EXPAND</div>
         </Col>
         <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
-          <div className="content">COLLAPSE</div>
+          <div className="content">COLLAPS</div>
         </Col>
 
         <Col className="gutter-row" lg={4} md={3} sm={2} xs={2}>
