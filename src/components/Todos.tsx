@@ -3,12 +3,12 @@ import {
   DownOutlined,
   EditOutlined,
   GlobalOutlined,
-} from "@ant-design/icons";
-import { Col, Collapse, Row } from "antd";
-import React, { ReactNode } from "react";
-import { Button } from "./Buttons/Button";
-import Card from "./Cards/Card";
-import Icon from "./Icons/Icon";
+} from '@ant-design/icons';
+import { Col, Collapse, Row } from 'antd';
+import React, { ReactNode } from 'react';
+import { Button } from './Buttons/Button';
+import Card from './Cards/Card';
+import Icon from './Icons/Icon';
 
 const { Panel } = Collapse;
 
@@ -27,6 +27,7 @@ interface TodosProps {
   handleEdit: (id: string) => void;
   handleComplete: (id: string) => void;
   show: boolean;
+  setOpen: any;
 }
 
 const Todos = (props: TodosProps) => {
@@ -39,9 +40,13 @@ const Todos = (props: TodosProps) => {
     handleComplete,
     show,
     icon,
+    setOpen,
   } = props;
   const Head = (
-    <span style={{ fontSize: "1.1rem", color: "#424242" }}> {category}</span>
+    <span style={{ fontSize: '1.1rem', color: '#424242' }}>
+      {' '}
+      {category} ({data.length}){' '}
+    </span>
   );
 
   return (
@@ -52,7 +57,7 @@ const Todos = (props: TodosProps) => {
             accordion
             bordered={false}
             expandIconPosition="end"
-            defaultActiveKey={defaultKey ? ["1"] : ""}
+            defaultActiveKey={defaultKey ? ['1'] : ''}
           >
             <Panel header={Head} key="1">
               <Card
@@ -61,6 +66,7 @@ const Todos = (props: TodosProps) => {
                 handleDelete={handleDelete}
                 handleEdit={handleEdit}
                 handleComplete={handleComplete}
+                setOpen={setOpen}
               />
             </Panel>
           </Collapse>

@@ -1,19 +1,18 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const StyledContainer = styled.div`
   width: 96vw;
   height: 95vh;
   overflow: scroll;
-  overflow-x:hidden;
+  overflow-x: hidden;
   /* margin: 10px auto; */
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   /* background: #ffffff; */
-  background: #E1E4EE;
+  background: #e1e4ee;
   color: #2d2d2d;
-
   .row-wrapper {
     color: #2a2a2a;
   }
@@ -24,7 +23,6 @@ export const StyledContainer = styled.div`
     justify-content: space-between;
     border-bottom: 1px solid gray;
     padding-bottom: 10px;
-
     /* border-bottom:1px solid gray */
     /* background:orange */
   }
@@ -35,7 +33,6 @@ export const StyledContainer = styled.div`
     padding: 10px;
     border-radius: 8px;
     color: #2d2d2d;
-
     span {
       color: #434343;
     }
@@ -43,7 +40,6 @@ export const StyledContainer = styled.div`
       color: #494949;
     }
   }
-
   .row-wrapper-nav {
     border-bottom: 1px solid gray;
     padding-bottom: 10px;
@@ -55,15 +51,13 @@ export const StyledContainer = styled.div`
       /* border:none; */
     }
   }
-
   .row-wrapper-collapse {
     padding-bottom: 10px;
     border-bottom: 1px solid #cccccc;
     /* height:100%; */
-    &:last-child{
-      border:none;
+    &:last-child {
+      border: none;
     }
-    
     .row-wrapper .content {
       flex-direction: column;
       background: pink;
@@ -73,23 +67,23 @@ export const StyledContainer = styled.div`
       color: #1a1818;
       border-radius: 10px;
       background: #ffffff;
-      height:100%;
+      height: 100%;
       /* box-shadow: 6px 6px 12px #e0e0e0, -6px -6px 12px #ffffff; */
       div {
         width: 90%;
         display: flex;
         gap: 12px;
         align-items: start;
-        span{
-        display: flex;
-        flex-direction:column;
-
+        span {
+          display: flex;
+          flex-direction: column;
         }
       }
-      .content-footer{
-        background:green;
-        width:100%;
-        display:flex;justify-content:end;
+      .content-footer {
+        background: green;
+        width: 100%;
+        display: flex;
+        justify-content: end;
       }
     }
     .ant-collapse .ant-collapse-item .ant-collapse-header {
@@ -97,5 +91,12 @@ export const StyledContainer = styled.div`
       width: 220px;
       color: #1a1818;
     }
+  }
+  .Test-Card {
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 `;

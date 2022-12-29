@@ -27,6 +27,7 @@ import {
   NotificationOutlined,
   ReadOutlined,
   ForkOutlined,
+  DatabaseFilled,
 } from '@ant-design/icons';
 import Todos from '../../components/Todos';
 import { StyledContainer } from '../../styles/Styles';
@@ -58,20 +59,23 @@ interface INew {
   }[];
 }
 
-interface ID33 {
-  id: string;
-  title: string;
-  description: string;
-  url: string;
-  isCompleted: boolean;
-}
-
 const Home: FC = () => {
   const { Panel } = Collapse;
 
-  const formRef = React.createRef<FormInstance>();
-  // const formRef2 = React.createRef<FormInstance>();
+  const formRef1 = React.createRef<FormInstance>();
+  const formRef2 = React.createRef<FormInstance>();
   const { Option } = Select;
+
+  const [testX, setTestX] = useState([
+    {
+      name: 'All Tasks',
+      icon: <NodeCollapseOutlined style={{ color: 'gray' }} />,
+    },
+    {
+      name: 'General',
+      icon: <NotificationOutlined style={{ color: 'green' }} />,
+    },
+  ]);
 
   let categories = [
     {
@@ -82,24 +86,11 @@ const Home: FC = () => {
       name: 'General',
       icon: <NotificationOutlined style={{ color: 'green' }} />,
     },
-    {
-      name: 'Technology',
-      icon: <LaptopOutlined style={{ color: 'orange' }} />,
-    },
-    {
-      name: 'Health & Hobbies',
-      icon: <ForkOutlined style={{ color: 'blue' }} />,
-    },
-    {
-      name: 'Others',
-      icon: <ReadOutlined style={{ color: 'yellow' }} />,
-    },
   ];
 
   // const [form1] = Form.useForm();
-  const [form1] = Form.useForm();
+  const [form] = Form.useForm();
   const [form2] = Form.useForm();
-  const [form3] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [updateBtn, setUpdateBtn] = useState(false);
 
@@ -109,7 +100,6 @@ const Home: FC = () => {
 
   //
   const [open2, setOpen2] = useState(false);
-  const [open3, setOpen3] = useState(false);
   const InitialData = [
     {
       categoryN: 'General',
@@ -126,10 +116,8 @@ const Home: FC = () => {
     },
   ];
   const [newData, setNewData] = useState<INew[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  console.log(newData);
 
-  const [data33, setData33] = useState<ID33[]>([]);
+  console.log(newData);
 
   // console.log(cat.map((x) => x.General));
 
@@ -144,7 +132,7 @@ const Home: FC = () => {
 
   const handleCancel = () => {
     setOpen(false);
-    form1.resetFields();
+    form.resetFields();
     setUpdateBtn(false);
   };
 
@@ -163,7 +151,7 @@ const Home: FC = () => {
 
   const handleCancel2 = () => {
     setOpen2(false);
-    form2.resetFields();
+    form.resetFields();
     setUpdateBtn(false);
   };
 
@@ -172,60 +160,42 @@ const Home: FC = () => {
   };
 
   const onFinish2 = (values: any) => {
-    console.log('category form submitted');
+    console.log('form 2 submitted');
     console.log(values);
 
     const x = {
-      categoryN: values.categoryN,
+      categoryN: values.category,
       icon: 'icon1',
-      datas: [],
+      datas: [
+        {
+          id: uuidv4(),
+          title: values.title,
+          description: values.description,
+          url: values.url,
+          isCompleted: false,
+        },
+      ],
     };
-
     setNewData([...newData, x]);
+    const news = [...testX];
+
+    setTestX([
+      ...testX,
+      {
+        name: x.categoryN,
+        icon: <NodeCollapseOutlined style={{ color: 'gray' }} />,
+      },
+    ]);
 
     notifySuccess('Category Added Successfully');
+    form2.resetFields();
     handleCancel2();
-    form1.resetFields();
-    showModal3();
-    setShowForm(true);
   };
 
   const onFinishFailed2 = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
-
   // :::::::::::::::::::::::::::::::::::::::::: NEW MODAL   ::::::::::::::::::::::::::::::::::::::::::::::
-
-  const handleOk3 = () => {
-    alert('OK clicked');
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-    }, 3000);
-  };
-
-  const handleCancel3 = () => {
-    setOpen3(false);
-    form3.resetFields();
-    setUpdateBtn(false);
-  };
-
-  const showModal3 = () => {
-    setOpen3(true);
-  };
-
-  const onFinish3 = (values: any) => {
-    console.log(values);
-
-    notifySuccess('Task Added Successfully');
-    handleCancel3();
-    form3.resetFields();
-  };
-
-  const onFinishFailed3 = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
 
   const notifySuccess = (x: string) =>
     toast.success(x, {
@@ -278,7 +248,7 @@ const Home: FC = () => {
       };
 
       setData([...data, id]);
-      form2.resetFields();
+      form.resetFields();
       notifySuccess('Task Added SuccessFully');
 
       setTimeout(() => {
@@ -311,7 +281,7 @@ const Home: FC = () => {
     console.log(xx);
     showModal();
 
-    form1.setFieldsValue({
+    form.setFieldsValue({
       id: xx?.id,
       title: xx?.title,
       description: xx?.description,
@@ -369,8 +339,8 @@ const Home: FC = () => {
                 <Col className="gutter-row" lg={24} md={24} sm={16} xs={24}>
                   <div className="content">
                     <Form
-                      ref={formRef}
-                      form={form1}
+                      // ref={formRef1}
+                      form={form2}
                       labelCol={{ span: 24 }}
                       wrapperCol={{ span: 24 }}
                       layout="horizontal"
@@ -379,7 +349,7 @@ const Home: FC = () => {
                       initialValues={{ remember: true }}
                     >
                       <Form.Item
-                        name="categoryN"
+                        name="category"
                         label="Enter Category"
                         rules={[
                           {
@@ -391,7 +361,51 @@ const Home: FC = () => {
                         <Input />
                       </Form.Item>
 
+                      <Form.Item
+                        style={{ display: 'none' }}
+                        name="title"
+                        label="Title"
+                        // rules={[
+                        //   {
+                        //     required: true,
+                        //     message: "Please Enter Task Title!",
+                        //   },
+                        // ]}
+                      >
+                        <Input />
+                      </Form.Item>
+
+                      <Form.Item
+                        style={{ display: 'none' }}
+                        name="description"
+                        label="Description"
+                      >
+                        <Input.TextArea />
+                      </Form.Item>
+
+                      <Form.Item
+                        style={{ display: 'none' }}
+                        name="url"
+                        label="URL"
+                      >
+                        <Input />
+                      </Form.Item>
+
                       <Row gutter={12}>
+                        <Col span={6}>
+                          <Form.Item wrapperCol={{ span: 24 }}>
+                            <Button type="primary" danger block disabled>
+                              Delete
+                            </Button>
+                          </Form.Item>
+                        </Col>
+                        <Col span={6} offset={6}>
+                          <Form.Item wrapperCol={{ span: 24 }}>
+                            <Button block onClick={handleCancel2}>
+                              Cancel
+                            </Button>
+                          </Form.Item>
+                        </Col>
                         <Col span={6}>
                           <Form.Item wrapperCol={{ span: 24 }}>
                             <Button type="primary" block htmlType="submit">
@@ -399,18 +413,17 @@ const Home: FC = () => {
                             </Button>
                           </Form.Item>
                         </Col>
+                      </Row>
+
+                      {/* <Row gutter={12}>
                         <Col span={6}>
                           <Form.Item wrapperCol={{ span: 24 }}>
-                            <Button
-                              type="primary"
-                              block
-                              onClick={handleCancel2}
-                            >
-                              cancel
+                            <Button type="primary" block htmlType="submit">
+                              {updateBtn ? "Update" : "Save"}
                             </Button>
                           </Form.Item>
                         </Col>
-                      </Row>
+                      </Row> */}
                     </Form>
                   </div>
                 </Col>
@@ -436,8 +449,8 @@ const Home: FC = () => {
                 <Col className="gutter-row" lg={24} md={24} sm={16} xs={24}>
                   <div className="content">
                     <Form
-                      ref={formRef}
-                      form={form2}
+                      ref={formRef2}
+                      form={form}
                       labelCol={{ span: 24 }}
                       wrapperCol={{ span: 24 }}
                       layout="horizontal"
@@ -468,7 +481,7 @@ const Home: FC = () => {
                           // onChange={onGenderChange}
                           allowClear
                         >
-                          {categories.map((item, index) => (
+                          {testX.map((item, index) => (
                             <Option key={index} value={item.name}>
                               {item.name}
                             </Option>
@@ -512,118 +525,85 @@ const Home: FC = () => {
                 </Col>
               </Row>
             </Modal>
-
-            {showForm && (
-              <Modal
-                open={open3}
-                onOk={handleOk3}
-                onCancel={handleCancel3}
-                footer={false}
-              >
-                <Row gutter={[24, 12]} className="row-wrapper">
-                  <Col className="gutter-row" lg={24} md={24} sm={16} xs={24}>
-                    <div className="content">
-                      <Form
-                        ref={formRef}
-                        form={form3}
-                        labelCol={{ span: 24 }}
-                        wrapperCol={{ span: 24 }}
-                        layout="horizontal"
-                        onFinish={onFinish3}
-                        onFinishFailed={onFinishFailed3}
-                        initialValues={{ remember: true }}
-                      >
-                        <Form.Item
-                          name="title"
-                          label="Title"
-                          rules={[
-                            {
-                              required: true,
-                              message: 'Please Enter Task Title!',
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-
-                        <Form.Item name="description" label="Description">
-                          <Input.TextArea />
-                        </Form.Item>
-
-                        <Form.Item name="url" label="URL">
-                          <Input />
-                        </Form.Item>
-
-                        <Row gutter={12}>
-                          <Col span={6}>
-                            <Form.Item wrapperCol={{ span: 24 }}>
-                              <Button type="primary" danger block disabled>
-                                Delete
-                              </Button>
-                            </Form.Item>
-                          </Col>
-                          <Col span={6} offset={6}>
-                            <Form.Item wrapperCol={{ span: 24 }}>
-                              <Button block onClick={handleCancel3}>
-                                Cancel
-                              </Button>
-                            </Form.Item>
-                          </Col>
-                          <Col span={6}>
-                            <Form.Item wrapperCol={{ span: 24 }}>
-                              <Button type="primary" block htmlType="submit">
-                                {updateBtn ? 'Update' : 'Save'}
-                              </Button>
-                            </Form.Item>
-                          </Col>
-                        </Row>
-                      </Form>
-                    </div>
-                  </Col>
-                </Row>
-              </Modal>
-            )}
           </div>
         </Col>
       </Row>
       {/* <Navbar/> */}
 
       <Collapse defaultActiveKey={['1']} ghost>
-        {newData.map((i, index) => {
+        {testX.map((item, index) => {
           return (
-            <Panel header={i.categoryN} key={index + 1}>
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Necessitatibus, provident velit autem amet quisquam porro modi
-                fugit suscipit deserunt dolorem consequatur eos quo!
-              </p>
-            </Panel>
+            <Todos
+              key={item.name}
+              data={data.filter((elem) => {
+                if (item.name == 'All Tasks') {
+                  return data;
+                } else {
+                  return elem.category === item.name;
+                }
+              })}
+              setOpen={setOpen}
+              category={item.name}
+              icon={item.icon}
+              defaultKey={item.name === 'All Tasks' ? true : false}
+              handleDelete={handleDelete}
+              handleEdit={handleEdit}
+              handleComplete={handleComplete}
+              show={item.name === 'All Tasks' && true}
+            />
           );
         })}
+
+        {/* {newData.map((item, index) => {
+          return (
+            <Panel header={item.categoryN} key={index + 1}>
+              <Row gutter={[12, 12]} className="">
+                {item.datas.map((dItem, index) => {
+                  return (
+                    <Col className="gutter-row" lg={6} md={8} sm={12} xs={12}>
+                      <div
+                        style={{ background: "gray", padding: ".2rem 1rem" }}
+                      >
+                        <Row
+                          gutter={[2, 2]}
+                          className=""
+                          style={{ background: "" }}
+                        >
+                          <Col className="gutter-row" lg={4}>
+                            <div>icon</div>
+                          </Col>
+                          <Col className="gutter-row" lg={16}>
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: "2px",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <span>{dItem.title}</span>
+                              <span>{dItem.description}</span>
+                            </div>
+                          </Col>
+                        </Row>
+                        <Row gutter={[12, 12]} className="">
+                          <Col className="gutter-row" offset={14} lg={6}>
+                            <div style={{ display: "flex", gap: "10px" }}>
+                              <button>Edit</button>
+                              <button>Delete</button>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                  );
+                })}
+              </Row>
+            </Panel>
+          );
+        })} */}
       </Collapse>
 
       {/* CATEGORIES */}
-      {categories.map((item, index) => {
-        return (
-          <Todos
-            key={item.name}
-            data={data.filter((elem) => {
-              if (item.name == 'All Tasks') {
-                return data;
-              } else {
-                return elem.category === item.name;
-              }
-            })}
-            category={item.name}
-            icon={item.icon}
-            defaultKey={item.name === 'All Tasks' ? true : false}
-            handleDelete={handleDelete}
-            handleEdit={handleEdit}
-            handleComplete={handleComplete}
-            show={item.name === 'All Tasks' && true}
-          />
-        );
-      })}
 
       {/* <Todos
         data={data.filter((item) => item.category === "general")}
@@ -632,7 +612,6 @@ const Home: FC = () => {
         handleDelete={handleDelete}
         handleEdit={handleEdit}
       />
-
       <Todos
         data={data.filter((item) => item.category === "technology")}
         category="Technology"

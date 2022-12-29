@@ -85,7 +85,35 @@ const cData = actualData.filter((item)=>{
 
 
 
-
+// const [state,setState] = [
+//   {
+//         categoryN: 'General',
+//         icon: <GlobalOutlined style={{ fontSize: '1.3rem', color: 'green' }} />,
+//         actualData: [
+//           {
+//             id: uuidv4(),
+//             title: 'Default 01',
+//             description: 'Default Description',
+//             url: 'Default Url',
+//             isCompleted: false,
+//           },
+//         ],
+//       },
+//       {
+//         categoryN: 'Technology',
+//         icon: <GlobalOutlined style={{ fontSize: '1.3rem', color: 'green' }} />,
+//         actualData: [
+//           {
+//             id: uuidv4(),
+//             title: 'Default 01',
+//             description: 'Default Description',
+//             url: 'Default Url',
+//             isCompleted: false,
+//           },
+//         ],
+//       },
+//   ]
+  
 
 
 
