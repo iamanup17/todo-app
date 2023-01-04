@@ -11,6 +11,7 @@ import { StyledContainer } from '../../styles/Styles';
 // import { MdWork } from "@react-icons/all-files/fa/FaBeer";
 
 import { MdWork } from '@react-icons/all-files/md/MdWork';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Container = styled.div`
   background: #2a9e81;
@@ -155,6 +156,13 @@ const Button = styled.button`
 
 const HomePage = () => {
   const [details, setDetails] = useState(false);
+  const dispatch = useDispatch();
+  const data = useSelector((state: any) => state.timer);
+  console.log(data);
+
+  const handleClick = () => {
+    setDetails(true);
+  };
   return (
     <StyledContainer className="" style={{ background: '#fff' }}>
       <Container className="container">
@@ -204,7 +212,7 @@ const HomePage = () => {
             </>
           ) : (
             <Row2 style={{ background: '' }}>
-              <Button onClick={() => setDetails(true)}>Start Tracker</Button>
+              <Button onClick={handleClick}>Start Tracker</Button>
             </Row2>
           )}
         </Section>
