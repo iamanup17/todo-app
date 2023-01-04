@@ -37,6 +37,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import type { FormInstance } from 'antd/es/form';
 import { icons } from 'antd/es/image/PreviewGroup';
+import { INew } from '../../interfaces/interface';
 
 export interface IData {
   id: string;
@@ -47,18 +48,6 @@ export interface IData {
   isCompleted: boolean;
 }
 
-interface INew {
-  categoryN: string;
-  icon: string;
-  datas: {
-    id: string;
-    title: string;
-    description: string;
-    url: string;
-    isCompleted: boolean;
-  }[];
-}
-
 const Home: FC = () => {
   const { Panel } = Collapse;
 
@@ -66,7 +55,7 @@ const Home: FC = () => {
   const formRef2 = React.createRef<FormInstance>();
   const { Option } = Select;
 
-  const [testX, setTestX] = useState([
+  const [categoryList, setCategoryList] = useState([
     {
       name: 'All Tasks',
       icon: <NodeCollapseOutlined style={{ color: 'gray' }} />,
@@ -76,17 +65,6 @@ const Home: FC = () => {
       icon: <NotificationOutlined style={{ color: 'green' }} />,
     },
   ]);
-
-  let categories = [
-    {
-      name: 'All Tasks',
-      icon: <NodeCollapseOutlined style={{ color: 'gray' }} />,
-    },
-    {
-      name: 'General',
-      icon: <NotificationOutlined style={{ color: 'green' }} />,
-    },
-  ];
 
   // const [form1] = Form.useForm();
   const [form] = Form.useForm();
@@ -100,26 +78,22 @@ const Home: FC = () => {
 
   //
   const [open2, setOpen2] = useState(false);
-  const InitialData = [
-    {
-      categoryN: 'General',
-      icon: 'icons',
-      datas: [
-        {
-          id: '123',
-          title: 'string',
-          description: 'string',
-          url: 'string',
-          isCompleted: false,
-        },
-      ],
-    },
-  ];
-  const [newData, setNewData] = useState<INew[]>([]);
 
-  console.log(newData);
+  // const [newData, setNewData] = useState<INew[]>([]);
 
   // console.log(cat.map((x) => x.General));
+
+  const notifySuccess = (x: string) =>
+    toast.success(x, {
+      position: 'top-center',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
 
   const handleOk = () => {
     alert('OK clicked');
@@ -159,30 +133,20 @@ const Home: FC = () => {
     setOpen2(true);
   };
 
-  const onFinish2 = (values: any) => {
+  const onFinishCategory = (values: any) => {
     console.log('form 2 submitted');
     console.log(values);
 
-    const x = {
+    const newCategory = {
       categoryN: values.category,
       icon: 'icon1',
-      datas: [
-        {
-          id: uuidv4(),
-          title: values.title,
-          description: values.description,
-          url: values.url,
-          isCompleted: false,
-        },
-      ],
+      datas: [],
     };
-    setNewData([...newData, x]);
-    const news = [...testX];
 
-    setTestX([
-      ...testX,
+    setCategoryList([
+      ...categoryList,
       {
-        name: x.categoryN,
+        name: newCategory.categoryN,
         icon: <NodeCollapseOutlined style={{ color: 'gray' }} />,
       },
     ]);
@@ -197,24 +161,7 @@ const Home: FC = () => {
   };
   // :::::::::::::::::::::::::::::::::::::::::: NEW MODAL   ::::::::::::::::::::::::::::::::::::::::::::::
 
-  const notifySuccess = (x: string) =>
-    toast.success(x, {
-      position: 'top-center',
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'light',
-    });
-
   const onFinish = (values: any) => {
-    const { title, description, category, url } = values;
-    console.log('Success:', values);
-
-    // setNewData([...newData, values]);
-
     if (updateBtn) {
       console.log('updating data');
       setData(
@@ -236,18 +183,16 @@ const Home: FC = () => {
       );
       notifySuccess('Task Updated Successfully');
       handleCancel();
-    }
-    // else if (!update) {
-    if (!updateBtn) {
+    } else if (!updateBtn) {
       console.log('Adding data');
 
-      const id = {
+      const extra = {
         id: uuidv4(),
         isCompleted: false,
         ...values,
       };
 
-      setData([...data, id]);
+      setData([...data, extra]);
       form.resetFields();
       notifySuccess('Task Added SuccessFully');
 
@@ -255,10 +200,8 @@ const Home: FC = () => {
         handleCancel();
       }, 500);
     }
-    // }
   };
-
-  console.log(newData);
+  console.log(data);
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
@@ -291,37 +234,22 @@ const Home: FC = () => {
     console.log(id);
   };
 
-  const handleComplete = (id: string) => {
-    console.log(id);
-    const xx = data.find((x) => x.id === id);
-
-    // setData(
-    //   data.map((elem)=>{
-    //   if
-    //   })
-    // )
-  };
+  const NavItems = ['DRAG & DROP', 'AG FILTER', 'VIEW', ' EXPAND', 'COLLAPSE'];
 
   return (
     <StyledContainer className="">
       <Header />
       <ToastContainer />
       <Row gutter={[3, 12]} className="row-wrapper-nav">
-        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
-          <div className="content">DRAG & DROP </div>
-        </Col>
-        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
-          <div className="content">TAG FILTER</div>
-        </Col>
-        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
-          <div className="content">VIEW</div>
-        </Col>
-        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
-          <div className="content">EXPAND</div>
-        </Col>
-        <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
-          <div className="content">COLLAPSE</div>
-        </Col>
+        {NavItems.map((items) => {
+          return (
+            <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
+              <div className="content">{items}</div>
+            </Col>
+          );
+        })}
+        {/*:::::::::::::::::::::::::::;;;;:::::::::::::::: CATRGORY FORM :::::::::::::::::::::::::::::::*/}
+
         <Col className="gutter-row" lg={4} md={3} sm={2} xs={2}>
           <div className="content">
             <Button onClick={showModal2} icon={<PlusOutlined />}>
@@ -339,12 +267,11 @@ const Home: FC = () => {
                 <Col className="gutter-row" lg={24} md={24} sm={16} xs={24}>
                   <div className="content">
                     <Form
-                      // ref={formRef1}
                       form={form2}
                       labelCol={{ span: 24 }}
                       wrapperCol={{ span: 24 }}
                       layout="horizontal"
-                      onFinish={onFinish2}
+                      onFinish={onFinishCategory}
                       onFinishFailed={onFinishFailed2}
                       initialValues={{ remember: true }}
                     >
@@ -365,12 +292,6 @@ const Home: FC = () => {
                         style={{ display: 'none' }}
                         name="title"
                         label="Title"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: "Please Enter Task Title!",
-                        //   },
-                        // ]}
                       >
                         <Input />
                       </Form.Item>
@@ -431,12 +352,15 @@ const Home: FC = () => {
             </Modal>
           </div>
         </Col>
+        {/*:::::::::::::::::::::::::::;;;;:::::::::::::::: CATRGORY FORM :::::::::::::::::::::::::::::::*/}
+
+        {/*:::::::::::::::::::::::::::;;;;:::::::::::::::: INDIVIDUAL TASK :::::::::::::::::::::::::::::::*/}
 
         <Col className="gutter-row" lg={4} md={3} sm={2} xs={2}>
           <div className="content">
             <Button onClick={showModal} icon={<PlusOutlined />}>
               {' '}
-              ADD COLLECTION
+              ADD TASK
             </Button>
 
             <Modal
@@ -481,7 +405,7 @@ const Home: FC = () => {
                           // onChange={onGenderChange}
                           allowClear
                         >
-                          {testX.map((item, index) => (
+                          {categoryList.map((item, index) => (
                             <Option key={index} value={item.name}>
                               {item.name}
                             </Option>
@@ -527,16 +451,19 @@ const Home: FC = () => {
             </Modal>
           </div>
         </Col>
+        {/*:::::::::::::::::::::::::::;;;;:::::::::::::::: INDIVIDUAL TASK :::::::::::::::::::::::::::::::*/}
       </Row>
       {/* <Navbar/> */}
 
+      {/* Data List */}
+
       <Collapse defaultActiveKey={['1']} ghost>
-        {testX.map((item, index) => {
+        {categoryList.map((item, index) => {
           return (
             <Todos
               key={item.name}
               data={data.filter((elem) => {
-                if (item.name == 'All Tasks') {
+                if (item.name === 'All Tasks') {
                   return data;
                 } else {
                   return elem.category === item.name;
@@ -548,98 +475,11 @@ const Home: FC = () => {
               defaultKey={item.name === 'All Tasks' ? true : false}
               handleDelete={handleDelete}
               handleEdit={handleEdit}
-              handleComplete={handleComplete}
               show={item.name === 'All Tasks' && true}
             />
           );
         })}
-
-        {/* {newData.map((item, index) => {
-          return (
-            <Panel header={item.categoryN} key={index + 1}>
-              <Row gutter={[12, 12]} className="">
-                {item.datas.map((dItem, index) => {
-                  return (
-                    <Col className="gutter-row" lg={6} md={8} sm={12} xs={12}>
-                      <div
-                        style={{ background: "gray", padding: ".2rem 1rem" }}
-                      >
-                        <Row
-                          gutter={[2, 2]}
-                          className=""
-                          style={{ background: "" }}
-                        >
-                          <Col className="gutter-row" lg={4}>
-                            <div>icon</div>
-                          </Col>
-                          <Col className="gutter-row" lg={16}>
-                            <div
-                              style={{
-                                display: "flex",
-                                gap: "2px",
-                                flexDirection: "column",
-                              }}
-                            >
-                              <span>{dItem.title}</span>
-                              <span>{dItem.description}</span>
-                            </div>
-                          </Col>
-                        </Row>
-                        <Row gutter={[12, 12]} className="">
-                          <Col className="gutter-row" offset={14} lg={6}>
-                            <div style={{ display: "flex", gap: "10px" }}>
-                              <button>Edit</button>
-                              <button>Delete</button>
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </Col>
-                  );
-                })}
-              </Row>
-            </Panel>
-          );
-        })} */}
       </Collapse>
-
-      {/* CATEGORIES */}
-
-      {/* <Todos
-        data={data.filter((item) => item.category === "general")}
-        category="General"
-        defaultKey={true}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-      />
-      <Todos
-        data={data.filter((item) => item.category === "technology")}
-        category="Technology"
-        defaultKey={false}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-      />
-      <Todos
-        data={data.filter((item) => item.category === "health")}
-        category="Health & Hobbies"
-        defaultKey={false}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-      />
-      <Todos
-        data={data.filter((item) => item.category === 'others')}
-        category="Others"
-        defaultKey={false}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-      />
-      <Todos
-        data={data}
-        category="All"
-        defaultKey={false}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-      /> */}
     </StyledContainer>
   );
 };

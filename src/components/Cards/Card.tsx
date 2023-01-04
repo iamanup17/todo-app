@@ -14,13 +14,11 @@ type CardProps = {
   icon: any;
   handleDelete: (id: string) => void;
   handleEdit: (id: string) => void;
-  handleComplete: (id: string) => void;
   setOpen: any;
 };
 
 const Card = (props: CardProps) => {
-  const { data, icon, handleDelete, handleEdit, handleComplete, setOpen } =
-    props;
+  const { data, icon, handleDelete, handleEdit, setOpen } = props;
   return (
     <Row gutter={[12, 12]} className="row-wrapper">
       {data.length == 0 && (

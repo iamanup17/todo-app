@@ -25,7 +25,6 @@ interface TodosProps {
   defaultKey: boolean;
   handleDelete: (id: string) => void;
   handleEdit: (id: string) => void;
-  handleComplete: (id: string) => void;
   show: boolean;
   setOpen: any;
 }
@@ -37,7 +36,6 @@ const Todos = (props: TodosProps) => {
     defaultKey,
     handleDelete,
     handleEdit,
-    handleComplete,
     show,
     icon,
     setOpen,
@@ -65,7 +63,6 @@ const Todos = (props: TodosProps) => {
                 icon={icon}
                 handleDelete={handleDelete}
                 handleEdit={handleEdit}
-                handleComplete={handleComplete}
                 setOpen={setOpen}
               />
             </Panel>

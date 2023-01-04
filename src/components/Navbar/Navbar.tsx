@@ -4,12 +4,14 @@ import {
   BankOutlined,
   BuildOutlined,
   HeatMapOutlined,
+  HomeOutlined,
   SettingOutlined,
-} from "@ant-design/icons";
-import { Col, Row } from "antd";
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
-import styled from "styled-components";
+  UserOutlined,
+} from '@ant-design/icons';
+import { Col, Row } from 'antd';
+import React from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import styled from 'styled-components';
 
 const StyledNavbar = styled.div`
   background: #ffffff;
@@ -45,18 +47,18 @@ const StyledNavbar = styled.div`
 
 const Navbar = () => {
   let activeStyle = {
-    textDecoration: "underline",
-    color: " #47ceff",
+    textDecoration: 'underline',
+    color: ' #47ceff',
   };
 
-  let activeClassName = "underline";
+  let activeClassName = 'underline';
 
   return (
     <StyledNavbar>
       <Row gutter={12} className="Logo">
         <Col className="gutter-row" span={24}>
           <div className="content">
-            <HeatMapOutlined style={{ fontSize: "2rem" }} />
+            <UserOutlined style={{ fontSize: '2rem', color: '#0a99d6' }} />
           </div>
         </Col>
       </Row>
@@ -68,7 +70,18 @@ const Navbar = () => {
               style={({ isActive }) => (isActive ? activeStyle : undefined)}
               to="/"
             >
-              <AppstoreOutlined style={{ fontSize: "2rem" }} />
+              <HomeOutlined style={{ fontSize: '2rem' }} />
+            </NavLink>
+          </div>
+        </Col>
+
+        <Col className="gutter-row" span={24}>
+          <div className="content">
+            <NavLink
+              style={({ isActive }) => (isActive ? activeStyle : undefined)}
+              to="/todo"
+            >
+              <AppstoreOutlined style={{ fontSize: '2rem' }} />
             </NavLink>
           </div>
         </Col>
@@ -77,31 +90,28 @@ const Navbar = () => {
             <NavLink
               to="/new"
               style={({ isActive }) => (isActive ? activeStyle : undefined)}
-
             >
-              <AimOutlined style={{ fontSize: "2rem" }} />
+              <AimOutlined style={{ fontSize: '2rem' }} />
             </NavLink>
           </div>
         </Col>
-        <Col className="gutter-row" span={24}>
+        {/* <Col className="gutter-row" span={24}>
           <div className="content">
             <NavLink
               to="/new3"
               style={({ isActive }) => (isActive ? activeStyle : undefined)}
-
             >
-              <BankOutlined style={{ fontSize: "2rem" }} />
+              <BankOutlined style={{ fontSize: '2rem' }} />
             </NavLink>
           </div>
-        </Col>
+        </Col> */}
         <Col className="gutter-row" span={24}>
           <div className="content">
             <NavLink
               to="/new4"
               style={({ isActive }) => (isActive ? activeStyle : undefined)}
-
             >
-              <BuildOutlined style={{ fontSize: "2rem" }} />
+              <BuildOutlined style={{ fontSize: '2rem' }} />
             </NavLink>
           </div>
         </Col>
@@ -109,7 +119,7 @@ const Navbar = () => {
       <Row gutter={12} className="Logo">
         <Col className="gutter-row" span={24}>
           <div className="content">
-            <SettingOutlined style={{ fontSize: "2rem" }} />
+            <SettingOutlined style={{ fontSize: '2rem' }} />
           </div>
         </Col>
       </Row>

@@ -1,9 +1,9 @@
 import React, { ChangeEvent, FC, FormEvent, useRef, useState } from 'react';
 import styled from 'styled-components';
-// import { v4 as uuidv4 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
+import { Row, Col, Input, Button, Modal, Collapse } from 'antd';
 
-import { Row, Form, Col, Input, Button, Modal, Select, Collapse } from 'antd';
+import { Select, Form } from 'antd';
 import {
   GlobalOutlined,
   PlusOutlined,
@@ -14,21 +14,10 @@ import { StyledContainer } from '../../styles/Styles';
 import Header from '../../components/Header';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Todo from '../../components/Todo';
+import { IData, IData2 } from '../../interfaces/interface';
 
-export interface IData {
-  categoryN: string;
-  icon: React.ReactNode;
-  actualData: {
-    id: string;
-    title: string;
-    description: string;
-    url: string;
-    isCompleted: boolean;
-  }[];
-}
-
-const Home2: FC = () => {
-  const { Panel } = Collapse;
+const Home2: FC = (props) => {
   const { Option } = Select;
 
   const InitialData = [
@@ -47,7 +36,6 @@ const Home2: FC = () => {
     },
   ];
 
-  // const [form1] = Form.useForm();
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
 
@@ -61,11 +49,23 @@ const Home2: FC = () => {
 
   const [data, setData] = useState<IData[]>(InitialData);
 
-  const [categoryList, setCategoryList] = useState(
-    data.map((item) => {
-      return { name: item.categoryN, icon: item.icon };
-    })
-  );
+  const [reference, setReference] = useState<any>({});
+
+  // :::::::::::::::::::::::::::::::::::::::::: TOAST MESSAGE   ::::::::::::::::::::::::::::::::::::::::::::::
+
+  const notifySuccess = (x: string) =>
+    toast.success(x, {
+      position: 'top-center',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
+
+  // :::::::::::::::::::::::::::::::::::::::::: TOAST MESSAGE   ::::::::::::::::::::::::::::::::::::::::::::::
 
   // ::::::::::::::::::::::::::::::::::::::::::  MODAL  1  ::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -91,7 +91,7 @@ const Home2: FC = () => {
   // :::::::::::::::::::::::::::::::::::::::::: MODAL 1  ::::::::::::::::::::::::::::::::::::::::::::::
 
   // :::::::::::::::::::::::::::::::::::::::::: MODAL 2  ::::::::::::::::::::::::::::::::::::::::::::::
-  const handleOk2 = () => {
+  const handleOkCategory = () => {
     alert('OK clicked');
     setLoading(true);
     setTimeout(() => {
@@ -100,7 +100,7 @@ const Home2: FC = () => {
     }, 3000);
   };
 
-  const handleCancel2 = () => {
+  const handleCancelCategory = () => {
     setOpen2(false);
     form2.resetFields();
     setUpdateBtn(false);
@@ -110,154 +110,246 @@ const Home2: FC = () => {
     setOpen2(true);
   };
 
-  const onFinish2 = (values: any) => {
+  const onFinishCategory = (values: any) => {
+    console.log('on finish category');
+    console.log('Adding Data');
+    const x = {
+      categoryN: values.category,
+      icon: <GlobalOutlined style={{ fontSize: '1.3rem', color: 'green' }} />,
+      actualData: [
+        // {
+        //   id: uuidv4(),
+        //   title: values.title,
+        //   description: values.description,
+        //   url: values.url,
+        //   isCompleted: false,
+        // },
+      ],
+    };
+    setData([...data, x]);
+    setCategoryList([...categoryList, { name: x.categoryN, icon: x.icon }]);
+    notifySuccess('Category Added Successfully');
+    form2.resetFields();
+    handleCancelCategory();
+  };
+
+  const onFinishCategoryFailed = (errorInfo: any) => {
+    console.log('Failed:', errorInfo);
+  };
+  // :::::::::::::::::::::::::::::::::::::::::: MODAL 2  ::::::::::::::::::::::::::::::::::::::::::::::
+
+  // :::::::::::::::::::::::::::  ADD COLLECTION FORM  ::::::::::::::::::::::::::::::::::::::::::
+  const onFinishTask = (values: any) => {
+    const { category, title, description, url } = values;
+    console.log('Success:', values);
+    console.log('new form submitting');
+
     if (!updateBtn) {
-      console.log('Adding Data');
-      const x = {
-        categoryN: values.category,
-        icon: <GlobalOutlined style={{ fontSize: '1.3rem', color: 'green' }} />,
-        actualData: [
-          {
+      setData((prevState) => {
+        // Create a new object that will replace the previous state
+        const newState = [...prevState];
+        // Find the index of the category in the newState array
+        const categoryIndex = newState.findIndex(
+          (cat) => cat.categoryN === values.category
+        );
+
+        console.log(categoryIndex);
+
+        // Check if the category exists in the newState array
+        if (categoryIndex !== -1) {
+          // If the category exists, add the new data to the actualData array
+          newState[categoryIndex].actualData.push({
             id: uuidv4(),
             title: values.title,
             description: values.description,
             url: values.url,
             isCompleted: false,
-          },
-        ],
-      };
-      setData([...data, x]);
+          });
+        }
+        // else {
+        //   // const nbv =
+        //   // If the category does not exist, add a new category with the new data
+        //   newState.push({
+        //     categoryN: "General",
+        //     icon: (
+        //       <GlobalOutlined style={{ fontSize: "1.3rem", color: "green" }} />
+        //     ),
+        //     actualData: [
+        //       {
+        //         id: uuidv4(),
+        //         title: values.title,
+        //         description: values.description,
+        //         url: values.url,
+        //         isCompleted: false,
+        //       },
+        //     ],
+        //   });
+        //   setCategoryList([
+        //     ...categoryList,
+        //     {
+        //       name: "Others",
+        //       icon: (
+        //         <GlobalOutlined
+        //           style={{ fontSize: "1.3rem", color: "green" }}
+        //         />
+        //       ),
+        //     },
+        //   ]);
+        // }
 
-      setCategoryList([...categoryList, { name: x.categoryN, icon: x.icon }]);
+        // Return the new state object
+        return newState;
+      });
 
-      notifySuccess('Category Added Successfully');
-      form2.resetFields();
-      handleCancel2();
+      form.resetFields();
+      notifySuccess('Task Added SuccessFully');
+
+      setTimeout(() => {
+        handleCancel();
+      }, 100);
     }
 
     if (updateBtn) {
-      console.log('updating Data');
-      console.log('updating data');
-
       const newData = data.map((item) => {
-        if (item.categoryN === catToUpdate) {
+        if (item.categoryN === values.category) {
+          console.log('In same category blovk');
+          console.log('need to change -', category);
           return {
             ...item,
             actualData: item.actualData.map((dataItem) => {
               if (dataItem.id === taskToUpdate) {
                 return {
                   ...dataItem,
-                  title: values.title,
-                  description: values.description,
-                  url: values.url,
-                  isCompleted: dataItem.isCompleted,
+                  title,
+                  description,
+                  url,
+                  isCompleted: false,
                 };
               }
+
               return dataItem;
             }),
           };
+        } else if (item.categoryN !== values.category) {
+          console.log('else block running');
+          return {
+            ...item,
+            actualData: item.actualData.filter(
+              (task) => task.id !== taskToUpdate
+            ),
+          };
         }
+
         return item;
       });
 
       setData(newData);
+      // dsmlsfksdfkf
+
+      const taskId = taskToUpdate;
+      const newCategory = values.category;
+
+      // setData(
+      //   data.map((item) => {
+      //     if (item.categoryN === newCategory) {
+      //       return {
+      //         ...category,
+      //         actualData: [...item.actualData, { values }],
+      //       };
+      //     }
+      //     return item;
+      //   })
+      // );
+
+      // setData((prevData: any) => {
+      //   const updatedData = prevData.map((category: any) => {
+      //     if (category.categoryN === newCategory) {
+      //       return {
+      //         ...category,
+      //         actualData: [
+      //           ...category.actualData,
+      //           prevData
+      //             .find((c: any) =>
+      //               c.actualData.some((task: any) => task.id === taskId)
+      //             )
+      //             .actualData.find((task: any) => task.id === taskId),
+      //         ],
+      //       };
+      //     } else if (
+      //       category.actualData.some((task: any) => task.id === taskId)
+      //     ) {
+      //       return {
+      //         ...category,
+      //         actualData: category.actualData.filter(
+      //           (task: any) => task.id !== taskId
+      //         ),
+      //       };
+      //     } else {
+      //       return category;
+      //     }
+      //   });
+      //   return updatedData;
+      // });
+
+      // dsmlsfksdfkf
+
+      // const editedTask = {
+      //   id: uuidv4(),
+      //   title: values.title,
+      //   description: values.description,
+      //   url: values.url,
+      //   isCompleted: true,
+      //   category: values.category,
+      //   originalCategory: catToUpdate,
+      // };
+
+      // setData(
+      //   data.map((item) => {
+      //     if (item.categoryN === editedTask.category) {
+      //       return {
+      //         ...item,
+      //         actualData: [...item.actualData, editedTask],
+      //       };
+      //     }
+      //      else if (item.categoryN === editedTask.originalCategory) {
+      //       return {
+      //         ...item,
+      //         actualData: item.actualData.filter(
+      //           (task) => task.id !== editedTask.id
+      //         ),
+      //       };
+      //     }
+      //     return item;
+      //   })
+      // );
 
       notifySuccess('Task Updated Successfully');
-      handleCancel2();
+      handleCancel();
     }
   };
-
-  const onFinishFailed2 = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
-  // :::::::::::::::::::::::::::::::::::::::::: MODAL 2  ::::::::::::::::::::::::::::::::::::::::::::::
-
-  // :::::::::::::::::::::::::::::::::::::::::: TOAST MESSAGE   ::::::::::::::::::::::::::::::::::::::::::::::
-
-  const notifySuccess = (x: string) =>
-    toast.success(x, {
-      position: 'top-center',
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'light',
-    });
-
-  // :::::::::::::::::::::::::::::::::::::::::: TOAST MESSAGE   ::::::::::::::::::::::::::::::::::::::::::::::
-
-  // :::::::::::::::::::::::::::  ADD COLLECTION FORM  ::::::::::::::::::::::::::::::::::::::::::
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-    console.log('new form submitting');
-    setData((prevState) => {
-      // Create a new object that will replace the previous state
-      const newState = [...prevState];
-
-      // Find the index of the category in the newState array
-      const categoryIndex = newState.findIndex(
-        (cat) => cat.categoryN === values.category
-      );
-
-      // Check if the category exists in the newState array
-      if (categoryIndex !== -1) {
-        // If the category exists, add the new data to the actualData array
-        newState[categoryIndex].actualData.push({
-          id: uuidv4(),
-          title: values.title,
-          description: values.description,
-          url: values.url,
-          isCompleted: false,
-        });
-      } else {
-        // If the category does not exist, add a new category with the new data
-        newState.push({
-          categoryN: values.category,
-          icon: (
-            <GlobalOutlined style={{ fontSize: '1.3rem', color: 'green' }} />
-          ),
-          actualData: [
-            {
-              id: uuidv4(),
-              title: values.title,
-              description: values.description,
-              url: values.url,
-              isCompleted: false,
-            },
-          ],
-        });
-      }
-
-      // Return the new state object
-      return newState;
-    });
-
-    form.resetFields();
-    notifySuccess('Task Added SuccessFully');
-
-    setTimeout(() => {
-      handleCancel();
-    }, 100);
-  };
   // :::::::::::::::::::::::::::  ADD COLLECTION FORM  ::::::::::::::::::::::::::::::::::::::::::
 
-  console.log(data);
-
-  const onFinishFailed = (errorInfo: any) => {
+  const onFinishTaskFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
 
-  const handleEdit2 = (c: string, id: string) => {
+  const handleEdit = (c: string, id: string) => {
     setUpdateBtn(true);
     setCatToUpdate(c);
     setTaskToUpdate(id);
     const xx = data.find((x) => x.categoryN === c);
     const yy = xx?.actualData.find((x) => x.id === id);
-    showModal2();
+    showModal();
 
-    form2.setFieldsValue({
+    setReference({
+      id: yy?.id,
+      title: yy?.title,
+      description: yy?.description,
+      url: yy?.url,
+      category: c,
+    });
+
+    form.setFieldsValue({
       id: yy?.id,
       title: yy?.title,
       description: yy?.description,
@@ -267,7 +359,7 @@ const Home2: FC = () => {
     console.log(id);
   };
 
-  const handleDelete2 = (c: string, id: string) => {
+  const handleDelete = (c: string, id: string) => {
     console.log('Delete button clicked');
     console.log(c);
     console.log(id);
@@ -287,11 +379,24 @@ const Home2: FC = () => {
     notifySuccess('Task Deleted SuccessFully');
   };
 
+  const [categoryList, setCategoryList] = useState(
+    data.map((item) => {
+      return { name: item.categoryN, icon: item.icon };
+    })
+  );
+
+  // console.log(categoryList);
+  console.log(data);
+
   return (
     <StyledContainer className="">
       <Header />
+
       <ToastContainer />
       <Row gutter={[3, 12]} className="row-wrapper-nav">
+        {/* {
+          NavData.map((item , index))
+        } */}
         <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
           <div className="content">DRAG & DROP </div>
         </Col>
@@ -307,6 +412,7 @@ const Home2: FC = () => {
         <Col className="gutter-row" lg={3} md={3} sm={2} xs={2}>
           <div className="content">COLLAPSE</div>
         </Col>
+        {/* :::::::::::::::::::::     CATEGORY    :::::::::::::::::::: */}
         <Col className="gutter-row" lg={4} md={3} sm={2} xs={2}>
           <div className="content">
             <Button onClick={showModal2} icon={<PlusOutlined />}>
@@ -316,8 +422,8 @@ const Home2: FC = () => {
 
             <Modal
               open={open2}
-              onOk={handleOk2}
-              onCancel={handleCancel2}
+              onOk={handleOkCategory}
+              onCancel={handleCancelCategory}
               footer={false}
             >
               <Row gutter={[24, 12]} className="row-wrapper">
@@ -328,11 +434,10 @@ const Home2: FC = () => {
                       labelCol={{ span: 24 }}
                       wrapperCol={{ span: 24 }}
                       layout="horizontal"
-                      onFinish={onFinish2}
-                      onFinishFailed={onFinishFailed2}
+                      onFinish={onFinishCategory}
+                      onFinishFailed={onFinishCategoryFailed}
                       initialValues={{ remember: true }}
                     >
-                      {/* {!updateBtn && ( */}
                       <Form.Item
                         name="category"
                         label="Enter Category"
@@ -345,9 +450,8 @@ const Home2: FC = () => {
                       >
                         <Input />
                       </Form.Item>
-                      {/* )} */}
 
-                      <Form.Item
+                      {/* <Form.Item
                         name="title"
                         label="Title"
                         // rules={[
@@ -359,14 +463,12 @@ const Home2: FC = () => {
                       >
                         <Input />
                       </Form.Item>
-
                       <Form.Item name="description" label="Description">
                         <Input.TextArea />
                       </Form.Item>
-
                       <Form.Item name="url" label="URL">
                         <Input />
-                      </Form.Item>
+                      </Form.Item> */}
 
                       <Row gutter={12}>
                         <Col span={6}>
@@ -378,7 +480,7 @@ const Home2: FC = () => {
                         </Col>
                         <Col span={6} offset={6}>
                           <Form.Item wrapperCol={{ span: 24 }}>
-                            <Button block onClick={handleCancel2}>
+                            <Button block onClick={handleCancelCategory}>
                               Cancel
                             </Button>
                           </Form.Item>
@@ -398,12 +500,15 @@ const Home2: FC = () => {
             </Modal>
           </div>
         </Col>
+        {/* :::::::::::::::::::::     CATEGORY    :::::::::::::::::::: */}
+
+        {/* :::::::::::::::::::::     TASK    :::::::::::::::::::: */}
 
         <Col className="gutter-row" lg={4} md={3} sm={2} xs={2}>
           <div className="content">
             <Button onClick={showModal} icon={<PlusOutlined />}>
               {' '}
-              ADD COLLECTION
+              ADD TASK
             </Button>
 
             <Modal
@@ -420,8 +525,8 @@ const Home2: FC = () => {
                       labelCol={{ span: 24 }}
                       wrapperCol={{ span: 24 }}
                       layout="horizontal"
-                      onFinish={onFinish}
-                      onFinishFailed={onFinishFailed}
+                      onFinish={onFinishTask}
+                      onFinishFailed={onFinishTaskFailed}
                       initialValues={{ remember: true }}
                     >
                       <Form.Item
@@ -437,8 +542,24 @@ const Home2: FC = () => {
                         <Input />
                       </Form.Item>
 
-                      <Form.Item name="category" label="Category">
-                        <Select placeholder="Select a category" allowClear>
+                      <Form.Item
+                        name="category"
+                        initialValue={'General'}
+                        label="Category"
+                      >
+                        {/* {Form.getFieldDecorator("select", {
+                          initialValue: "General",
+                        })(
+                          <Select defaultValue={"General"}>
+                            {categoryList.map((item, index) => (
+                              <Option key={index} value={item.name}>
+                                {item.name}
+                              </Option>
+                            ))}
+                          </Select>
+                        )} */}
+
+                        <Select>
                           {categoryList.map((item, index) => (
                             <Option key={index} value={item.name}>
                               {item.name}
@@ -485,113 +606,16 @@ const Home2: FC = () => {
             </Modal>
           </div>
         </Col>
+        {/* :::::::::::::::::::::     TASK    :::::::::::::::::::: */}
       </Row>
       {/* <Navbar/> */}
 
-      <Collapse defaultActiveKey={['1']} ghost>
-        {data.map((item, index) => {
-          return (
-            <Panel header={item.categoryN} key={index + 1}>
-              <Row gutter={[12, 12]} className="">
-                {item?.actualData?.map((dItem, index) => {
-                  return (
-                    <Col className="gutter-row" lg={6} md={8} sm={12} xs={12}>
-                      <div
-                        className="Test-Card"
-                        style={{ padding: '.5rem 1rem' }}
-                      >
-                        <Row
-                          gutter={[2, 2]}
-                          className=""
-                          style={{
-                            background: '',
-                            display: 'flex',
-                            justifyContent: 'start',
-                            alignItems: 'start',
-                          }}
-                        >
-                          <Col className="gutter-row" lg={4}>
-                            <div style={{ marginTop: '6px' }}>{item.icon}</div>
-                          </Col>
-                          <Col className="gutter-row" lg={16}>
-                            <div
-                              style={{
-                                display: 'flex',
-                                gap: '2px',
-                                flexDirection: 'column',
-                              }}
-                            >
-                              <span>{dItem.title}</span>
-                              <span>{dItem.description}</span>
-                            </div>
-                          </Col>
-                        </Row>
-
-                        <Row gutter={[12, 12]} className="">
-                          <Col className="gutter-row" offset={18} lg={6}>
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                              <EditOutlined
-                                style={{ color: 'blue', fontSize: '1.2rem' }}
-                                onClick={() => {
-                                  handleEdit2(item.categoryN, dItem.id);
-                                }}
-                              />
-                              <DeleteOutlined
-                                style={{ color: 'red', fontSize: '1.2rem' }}
-                                onClick={() => {
-                                  handleDelete2(item.categoryN, dItem.id);
-                                }}
-                              />
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </Col>
-                  );
-                })}
-              </Row>
-            </Panel>
-          );
-        })}
-      </Collapse>
-
-      {/* CATEGORIES */}
-
-      {/* <Todos
-        data={data.filter((item) => item.category === "general")}
-        category="General"
-        defaultKey={true}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-      />
-      <Todos
-        data={data.filter((item) => item.category === "technology")}
-        category="Technology"
-        defaultKey={false}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-      />
-      <Todos
-        data={data.filter((item) => item.category === "health")}
-        category="Health & Hobbies"
-        defaultKey={false}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-      />
-      <Todos
-        data={data.filter((item) => item.category === 'others')}
-        category="Others"
-        defaultKey={false}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-      />
-      <Todos
+      <Todo
         data={data}
-        category="All"
-        defaultKey={false}
-        handleDelete={handleDelete}
+        showModal={showModal}
         handleEdit={handleEdit}
-      /> */}
+        handleDelete={handleDelete}
+      />
     </StyledContainer>
   );
 };
